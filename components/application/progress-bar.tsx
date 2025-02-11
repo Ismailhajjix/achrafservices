@@ -1,7 +1,7 @@
 "use client"
 
 import { Check } from "lucide-react"
-import { ApplicationStep } from "@/lib/application-constants"
+import type { ApplicationStep } from "@/lib/application-constants"
 import { cn } from "@/lib/utils"
 
 interface ProgressBarProps {
