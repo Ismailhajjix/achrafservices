@@ -4,6 +4,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { useState } from "react"
 import { Menu, X } from "lucide-react"
+import type { Route } from "next"
 
 export function Navigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -38,16 +39,28 @@ export function Navigation() {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-4 lg:gap-8">
-            <Link href="/" className="text-sm lg:text-base text-white hover:text-gold transition-colors px-2">
+            <Link 
+              href={{ pathname: "/" as Route }} 
+              className="text-sm lg:text-base text-white hover:text-gold transition-colors px-2"
+            >
               Home
             </Link>
-            <Link href="/about" className="text-sm lg:text-base text-white hover:text-gold transition-colors px-2">
+            <Link 
+              href={{ pathname: "/about" as Route }} 
+              className="text-sm lg:text-base text-white hover:text-gold transition-colors px-2"
+            >
               About
             </Link>
-            <Link href="/services" className="text-sm lg:text-base text-white hover:text-gold transition-colors px-2">
+            <Link 
+              href={{ pathname: "/services" as Route }} 
+              className="text-sm lg:text-base text-white hover:text-gold transition-colors px-2"
+            >
               Services
             </Link>
-            <Link href="/contact" className="text-sm lg:text-base text-white hover:text-gold transition-colors px-2">
+            <Link 
+              href={{ pathname: "/contact" as Route }} 
+              className="text-sm lg:text-base text-white hover:text-gold transition-colors px-2"
+            >
               Contact
             </Link>
           </div>
@@ -57,28 +70,28 @@ export function Navigation() {
             <div className="fixed inset-0 bg-black/95 backdrop-blur-lg md:hidden pt-20 sm:pt-24">
               <div className="flex flex-col items-center justify-start h-full gap-5 sm:gap-8 p-4">
                 <Link 
-                  href="/" 
+                  href={{ pathname: "/" as Route }} 
                   className="text-xl sm:text-2xl text-white hover:text-gold transition-colors"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Home
                 </Link>
                 <Link 
-                  href="/about" 
+                  href={{ pathname: "/about" as Route }} 
                   className="text-xl sm:text-2xl text-white hover:text-gold transition-colors"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   About
                 </Link>
                 <Link 
-                  href="/services" 
+                  href={{ pathname: "/services" as Route }} 
                   className="text-xl sm:text-2xl text-white hover:text-gold transition-colors"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Services
                 </Link>
                 <Link 
-                  href="/contact" 
+                  href={{ pathname: "/contact" as Route }} 
                   className="text-xl sm:text-2xl text-white hover:text-gold transition-colors"
                   onClick={() => setIsMenuOpen(false)}
                 >
