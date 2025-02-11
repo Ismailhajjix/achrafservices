@@ -15,7 +15,7 @@ const testimonials = [
     name: "Amina Benali",
     role: "International Investor",
     company: "Global Ventures",
-    content: "The team's dedication to excellence and attention to detail made our immigration process smooth and hassle-free.",
+    content: "The team&apos;s dedication to excellence and attention to detail made our immigration process smooth and hassle-free.",
     rating: 5
   },
   {
@@ -141,7 +141,7 @@ const testimonials = [
     name: "Younes Tazi",
     role: "Founder",
     company: "StartUp Morocco",
-    content: "A reliable partner for all business needs. Their team's dedication and expertise are truly commendable.",
+    content: "A reliable partner for all business needs. Their team&apos;s dedication and expertise are truly commendable.",
     rating: 5
   },
   {

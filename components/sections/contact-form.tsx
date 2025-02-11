@@ -103,7 +103,7 @@ export function ContactForm() {
             transition={{ duration: 0.8, delay: 0.3 }}
             className="mt-3 xs:mt-4 text-white/70 text-xs xs:text-sm sm:text-base lg:text-lg max-w-3xl mx-auto leading-relaxed px-2 xs:px-4"
           >
-            Let's discuss how we can help you achieve your immigration and business goals. Our team is ready to provide personalized solutions tailored to your needs.
+            Let&apos;s discuss how we can help you achieve your immigration and business goals. Our team is ready to provide personalized solutions tailored to your needs.
           </motion.p>
         </motion.div>
       </div>
