@@ -1,8 +1,14 @@
 "use client"
 
 import Link from "next/link"
-import { Building2, Plane } from "lucide-react"
-import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger } from "@/components/ui/navigation-menu"
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+} from "@/components/ui/navigation-menu"
 import { services } from "@/config/services"
 
 export function NavMenu() {
@@ -10,15 +16,12 @@ export function NavMenu() {
     <NavigationMenu>
       <NavigationMenuList>
         <NavigationMenuItem>
-          <NavigationMenuTrigger className="flex items-center gap-2">
-            <Building2 className="w-4 h-4" />
-            Business Services
-          </NavigationMenuTrigger>
+          <NavigationMenuTrigger>Business Services</NavigationMenuTrigger>
           <NavigationMenuContent>
-            <div className="grid grid-cols-2 gap-3 p-4 w-[500px]">
+            <div className="grid gap-2 p-4 w-[400px]">
               {services.business.map((service) => (
                 <Link
-                  key={service.path}
+                  key={service.path.pathname}
                   href={service.path}
                   className="flex items-start gap-2 p-2 hover:bg-zinc-900 rounded-lg text-zinc-400 hover:text-white transition-colors"
                 >
@@ -34,15 +37,12 @@ export function NavMenu() {
         </NavigationMenuItem>
 
         <NavigationMenuItem>
-          <NavigationMenuTrigger className="flex items-center gap-2">
-            <Plane className="w-4 h-4" />
-            Immigration Services
-          </NavigationMenuTrigger>
+          <NavigationMenuTrigger>Immigration Services</NavigationMenuTrigger>
           <NavigationMenuContent>
-            <div className="grid grid-cols-2 gap-3 p-4 w-[500px]">
+            <div className="grid gap-2 p-4 w-[400px]">
               {services.immigration.map((service) => (
                 <Link
-                  key={service.path}
+                  key={service.path.pathname}
                   href={service.path}
                   className="flex items-start gap-2 p-2 hover:bg-zinc-900 rounded-lg text-zinc-400 hover:text-white transition-colors"
                 >
@@ -58,7 +58,7 @@ export function NavMenu() {
         </NavigationMenuItem>
 
         <NavigationMenuItem>
-          <Link href="/about" legacyBehavior passHref>
+          <Link href={{ pathname: "/about" }} legacyBehavior passHref>
             <NavigationMenuLink className="hover:text-white transition-colors">
               About
             </NavigationMenuLink>
@@ -66,7 +66,7 @@ export function NavMenu() {
         </NavigationMenuItem>
 
         <NavigationMenuItem>
-          <Link href="/contact" legacyBehavior passHref>
+          <Link href={{ pathname: "/contact" }} legacyBehavior passHref>
             <NavigationMenuLink className="hover:text-white transition-colors">
               Contact
             </NavigationMenuLink>
