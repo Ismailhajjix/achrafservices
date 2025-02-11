@@ -28,7 +28,7 @@ export function MobileMenu({ isOpen, setIsOpen }: MobileMenuProps) {
         >
           <nav className="grid gap-2">
             <Link
-              href="/"
+              href={{ pathname: "/" }}
               className="flex items-center gap-2 p-2 hover:bg-zinc-900 rounded-lg text-zinc-400 hover:text-white transition-colors"
               onClick={() => setIsOpen(false)}
             >
@@ -64,7 +64,7 @@ export function MobileMenu({ isOpen, setIsOpen }: MobileMenuProps) {
                     <div className="pl-4 py-2 space-y-1">
                       {services.business.map((service) => (
                         <Link
-                          key={service.path}
+                          key={service.path.pathname}
                           href={service.path}
                           className="flex items-center gap-2 p-2 hover:bg-zinc-900 rounded-lg text-zinc-400 hover:text-white transition-colors"
                           onClick={() => setIsOpen(false)}
@@ -107,7 +107,7 @@ export function MobileMenu({ isOpen, setIsOpen }: MobileMenuProps) {
                     <div className="pl-4 py-2 space-y-1">
                       {services.immigration.map((service) => (
                         <Link
-                          key={service.path}
+                          key={service.path.pathname}
                           href={service.path}
                           className="flex items-center gap-2 p-2 hover:bg-zinc-900 rounded-lg text-zinc-400 hover:text-white transition-colors"
                           onClick={() => setIsOpen(false)}
@@ -124,14 +124,14 @@ export function MobileMenu({ isOpen, setIsOpen }: MobileMenuProps) {
 
             <div className="border-t border-zinc-800 pt-2">
               <Link
-                href="/about"
+                href={{ pathname: "/about" }}
                 className="flex items-center gap-2 p-2 hover:bg-zinc-900 rounded-lg text-zinc-400 hover:text-white transition-colors"
                 onClick={() => setIsOpen(false)}
               >
                 <span>About</span>
               </Link>
               <Link
-                href="/contact"
+                href={{ pathname: "/contact" }}
                 className="flex items-center gap-2 p-2 hover:bg-zinc-900 rounded-lg text-zinc-400 hover:text-white transition-colors"
                 onClick={() => setIsOpen(false)}
               >
