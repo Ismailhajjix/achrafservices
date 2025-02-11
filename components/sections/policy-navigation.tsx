@@ -2,34 +2,45 @@
 
 import Link from "next/link"
 import { motion } from "framer-motion"
+import type { Route } from "next"
 
-const policyCategories = [
+interface PolicyItem {
+  name: string
+  href: { pathname: Route }
+}
+
+interface PolicyCategory {
+  title: string
+  items: PolicyItem[]
+}
+
+const policyCategories: PolicyCategory[] = [
   {
     title: "Business Formation",
     items: [
-      { name: "Company Formation Agreement", href: "/policies/company-formation" },
-      { name: "Cooperative Formation Guidelines", href: "/policies/cooperative-formation" },
-      { name: "Self-Entrepreneur Terms", href: "/policies/self-entrepreneur" },
-      { name: "Real Estate Documentation", href: "/policies/real-estate" },
+      { name: "Company Formation Agreement", href: { pathname: "/policies/company-formation" as Route } },
+      { name: "Cooperative Formation Guidelines", href: { pathname: "/policies/cooperative-formation" as Route } },
+      { name: "Self-Entrepreneur Terms", href: { pathname: "/policies/self-entrepreneur" as Route } },
+      { name: "Real Estate Documentation", href: { pathname: "/policies/real-estate" as Route } },
     ]
   },
   {
     title: "Immigration Services",
     items: [
-      { name: "Visa Application Terms", href: "/policies/visa-application" },
-      { name: "Work Permit Guidelines", href: "/policies/work-permit" },
-      { name: "Residence Permit Policy", href: "/policies/residence-permit" },
-      { name: "Citizenship & Naturalization", href: "/policies/citizenship" },
-      { name: "Family Reunification", href: "/policies/family-reunification" },
-      { name: "Student Visa Assistance", href: "/policies/student-visa" },
-      { name: "Travel Document & Passport", href: "/policies/travel-documents" },
+      { name: "Visa Application Terms", href: { pathname: "/policies/visa-application" as Route } },
+      { name: "Work Permit Guidelines", href: { pathname: "/policies/work-permit" as Route } },
+      { name: "Residence Permit Policy", href: { pathname: "/policies/residence-permit" as Route } },
+      { name: "Citizenship & Naturalization", href: { pathname: "/policies/citizenship" as Route } },
+      { name: "Family Reunification", href: { pathname: "/policies/family-reunification" as Route } },
+      { name: "Student Visa Assistance", href: { pathname: "/policies/student-visa" as Route } },
+      { name: "Travel Document & Passport", href: { pathname: "/policies/travel-documents" as Route } },
     ]
   },
   {
     title: "Employment & Social Services",
     items: [
-      { name: "Social Security Services", href: "/policies/social-security" },
-      { name: "ANAPEC Employment Support", href: "/policies/anapec-employment" },
+      { name: "Social Security Services", href: { pathname: "/policies/social-security" as Route } },
+      { name: "ANAPEC Employment Support", href: { pathname: "/policies/anapec-employment" as Route } },
     ]
   }
 ]
@@ -56,7 +67,7 @@ export function PolicyNavigation() {
           <div className="space-y-1">
             {category.items.map((item) => (
               <Link
-                key={item.href}
+                key={item.href.pathname}
                 href={item.href}
                 className="group flex items-center gap-3 p-3 rounded-lg hover:bg-white/5 transition-all duration-300"
               >
