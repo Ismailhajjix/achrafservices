@@ -6,6 +6,7 @@ import { AnimatePresence, motion } from "framer-motion"
 import { Button } from "@/components/ui/forms/button"
 import { useState } from "react"
 import { services } from "@/config/services"
+import type { Route } from "next"
 
 interface MobileMenuProps {
   isOpen: boolean
@@ -28,7 +29,7 @@ export function MobileMenu({ isOpen, setIsOpen }: MobileMenuProps) {
         >
           <nav className="grid gap-2">
             <Link
-              href={{ pathname: "/" }}
+              href={{ pathname: "/" as Route }}
               className="flex items-center gap-2 p-2 hover:bg-zinc-900 rounded-lg text-zinc-400 hover:text-white transition-colors"
               onClick={() => setIsOpen(false)}
             >
@@ -124,14 +125,14 @@ export function MobileMenu({ isOpen, setIsOpen }: MobileMenuProps) {
 
             <div className="border-t border-zinc-800 pt-2">
               <Link
-                href={{ pathname: "/about" }}
+                href={{ pathname: "/about" as Route }}
                 className="flex items-center gap-2 p-2 hover:bg-zinc-900 rounded-lg text-zinc-400 hover:text-white transition-colors"
                 onClick={() => setIsOpen(false)}
               >
                 <span>About</span>
               </Link>
               <Link
-                href={{ pathname: "/contact" }}
+                href={{ pathname: "/contact" as Route }}
                 className="flex items-center gap-2 p-2 hover:bg-zinc-900 rounded-lg text-zinc-400 hover:text-white transition-colors"
                 onClick={() => setIsOpen(false)}
               >

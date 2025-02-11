@@ -4,6 +4,9 @@ import Link from "next/link"
 import { MessageSquare, Phone, Mail, MapPin, Linkedin as LinkedinIcon, Twitter, Facebook, Instagram } from "lucide-react"
 
 const address = "Administrative District near Manhattan Cafe, Nador"
+const email = "contact@achrafservices.ma"
+const phone = "+212664690555"
+const landline = "+212532323358"
 
 export function ContactInfo() {
   return (
@@ -27,11 +30,11 @@ export function ContactInfo() {
           <div className="flex items-start gap-3">
             <Phone className="h-5 w-5 text-gold shrink-0 mt-0.5" />
             <div className="space-y-1">
-              <Link href="tel:+212532323358" className="block text-gray-300 hover:text-gold transition-colors">
-                +212 5 32 32 33 58
+              <Link href={`tel:${landline}`} className="block text-gray-300 hover:text-gold transition-colors">
+                05 32 32 33 58
               </Link>
-              <Link href="tel:+212664690555" className="block text-gray-300 hover:text-gold transition-colors">
-                +212 6 64 69 05 55
+              <Link href={`tel:${phone}`} className="block text-gray-300 hover:text-gold transition-colors">
+                06 64 69 05 55
               </Link>
             </div>
           </div>
@@ -39,28 +42,25 @@ export function ContactInfo() {
           {/* Email */}
           <div className="flex items-start gap-3">
             <Mail className="h-5 w-5 text-gold shrink-0 mt-0.5" />
-            <Link href="mailto:contact@achrafservices.ma" className="text-gray-300 hover:text-gold transition-colors">
-              contact@achrafservices.ma
+            <Link href={`mailto:${email}`} className="text-gray-300 hover:text-gold transition-colors">
+              {email}
             </Link>
           </div>
 
           {/* Social Media */}
-          <div className="flex items-start gap-3">
-            <div className="h-5 w-5 text-gold shrink-0 mt-0.5 opacity-0" />
-            <div className="flex items-center gap-4">
-              <Link href="https://linkedin.com" className="text-gray-300 hover:text-gold transition-colors">
-                <LinkedinIcon className="h-5 w-5" />
-              </Link>
-              <Link href="https://twitter.com" className="text-gray-300 hover:text-gold transition-colors">
-                <Twitter className="h-5 w-5" />
-              </Link>
-              <Link href="https://facebook.com" className="text-gray-300 hover:text-gold transition-colors">
-                <Facebook className="h-5 w-5" />
-              </Link>
-              <Link href="https://instagram.com" className="text-gray-300 hover:text-gold transition-colors">
-                <Instagram className="h-5 w-5" />
-              </Link>
-            </div>
+          <div className="flex items-center gap-4">
+            <Link href="https://linkedin.com" className="text-gray-300 hover:text-gold transition-colors">
+              <LinkedinIcon className="h-5 w-5" />
+            </Link>
+            <Link href="https://twitter.com" className="text-gray-300 hover:text-gold transition-colors">
+              <Twitter className="h-5 w-5" />
+            </Link>
+            <Link href="https://facebook.com" className="text-gray-300 hover:text-gold transition-colors">
+              <Facebook className="h-5 w-5" />
+            </Link>
+            <Link href="https://instagram.com" className="text-gray-300 hover:text-gold transition-colors">
+              <Instagram className="h-5 w-5" />
+            </Link>
           </div>
         </div>
       </div>

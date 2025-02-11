@@ -62,13 +62,13 @@ export function CompanyDetails() {
               <h3 className="text-white font-medium mb-1">Phone</h3>
               <div className="space-y-1">
                 <Link 
-                  href="tel:05 32 32 33 58"
+                  href="tel:+212532323358"
                   className="block text-zinc-400 text-sm hover:text-gold transition-colors"
                 >
                   05 32 32 33 58
                 </Link>
                 <Link 
-                  href="tel:06 64 69 05 55"
+                  href="tel:+212664690555"
                   className="block text-zinc-400 text-sm hover:text-gold transition-colors"
                 >
                   06 64 69 05 55

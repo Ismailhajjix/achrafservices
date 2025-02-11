@@ -4,33 +4,44 @@ import { useState } from "react"
 import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
 import { ChevronDown } from "lucide-react"
+import type { Route } from "next"
 
-const policyCategories = [
+interface PolicyItem {
+  name: string
+  href: { pathname: Route }
+}
+
+interface PolicyCategory {
+  title: string
+  items: PolicyItem[]
+}
+
+const policyCategories: PolicyCategory[] = [
   {
     title: "Business Formation",
     items: [
-      { name: "Company Formation Agreement", href: "/policies/company-formation" },
-      { name: "Cooperative Formation Guidelines", href: "/policies/cooperative-formation" },
-      { name: "Self-Entrepreneur Terms", href: "/policies/self-entrepreneur" },
-      { name: "Real Estate Documentation", href: "/policies/real-estate" },
+      { name: "Company Formation Agreement", href: { pathname: "/policies/company-formation" as Route } },
+      { name: "Cooperative Formation Guidelines", href: { pathname: "/policies/cooperative-formation" as Route } },
+      { name: "Self-Entrepreneur Terms", href: { pathname: "/policies/self-entrepreneur" as Route } },
+      { name: "Real Estate Documentation", href: { pathname: "/policies/real-estate" as Route } },
     ]
   },
   {
     title: "Immigration Services",
     items: [
-      { name: "Visa Application", href: "/policies/visa-application" },
-      { name: "Work Permit", href: "/policies/work-permit" },
-      { name: "Residence Permit", href: "/policies/residence-permit" },
-      { name: "Citizenship", href: "/policies/citizenship" },
-      { name: "Family Reunification", href: "/policies/family-reunification" },
-      { name: "Student Visa", href: "/policies/student-visa" },
+      { name: "Visa Application", href: { pathname: "/policies/visa-application" as Route } },
+      { name: "Work Permit", href: { pathname: "/policies/work-permit" as Route } },
+      { name: "Residence Permit", href: { pathname: "/policies/residence-permit" as Route } },
+      { name: "Citizenship", href: { pathname: "/policies/citizenship" as Route } },
+      { name: "Family Reunification", href: { pathname: "/policies/family-reunification" as Route } },
+      { name: "Student Visa", href: { pathname: "/policies/student-visa" as Route } },
     ]
   },
   {
     title: "Employment & Social Services",
     items: [
-      { name: "Social Security Services", href: "/policies/social-security" },
-      { name: "ANAPEC Employment Support", href: "/policies/anapec-employment" },
+      { name: "Social Security Services", href: { pathname: "/policies/social-security" as Route } },
+      { name: "ANAPEC Employment Support", href: { pathname: "/policies/anapec-employment" as Route } },
     ]
   }
 ]
@@ -68,7 +79,7 @@ export function PolicyAccordion() {
                 <div className="py-2 px-2">
                   {category.items.map((item) => (
                     <Link
-                      key={item.href}
+                      key={item.href.pathname}
                       href={item.href}
                       className="flex items-center gap-2 p-3 rounded-lg hover:bg-white/5 text-white/70 hover:text-gold text-sm transition-all duration-300"
                     >

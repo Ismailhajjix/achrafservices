@@ -4,36 +4,42 @@ import Link from "next/link"
 import Image from "next/image"
 import { Phone, Mail, ArrowRight } from "lucide-react"
 import { motion } from "framer-motion"
+import type { Route } from "next"
+
+interface Policy {
+  title: string
+  href: { pathname: Route }
+}
 
 export function Footer() {
-  const businessPolicies = [
-    { title: "Company Formation", href: { pathname: "/policies/company-formation" } },
-    { title: "Cooperative Formation", href: { pathname: "/policies/cooperative-formation" } },
-    { title: "Self Entrepreneur", href: { pathname: "/policies/self-entrepreneur" } },
-    { title: "Real Estate", href: { pathname: "/policies/real-estate" } },
-    { title: "Apostille", href: { pathname: "/policies/apostille" } },
-    { title: "Social Security", href: { pathname: "/policies/social-security" } },
-    { title: "ANAPEC Employment", href: { pathname: "/policies/anapec-employment" } },
+  const businessPolicies: Policy[] = [
+    { title: "Company Formation", href: { pathname: "/policies/company-formation" as Route } },
+    { title: "Cooperative Formation", href: { pathname: "/policies/cooperative-formation" as Route } },
+    { title: "Self Entrepreneur", href: { pathname: "/policies/self-entrepreneur" as Route } },
+    { title: "Real Estate", href: { pathname: "/policies/real-estate" as Route } },
+    { title: "Apostille", href: { pathname: "/policies/apostille" as Route } },
+    { title: "Social Security", href: { pathname: "/policies/social-security" as Route } },
+    { title: "ANAPEC Employment", href: { pathname: "/policies/anapec-employment" as Route } },
   ]
 
-  const immigrationPolicies = [
-    { title: "Visa Application", href: { pathname: "/policies/visa-application" } },
-    { title: "Work Permit", href: { pathname: "/policies/work-permit" } },
-    { title: "Residence Permit", href: { pathname: "/policies/residence-permit" } },
-    { title: "Citizenship", href: { pathname: "/policies/citizenship" } },
-    { title: "Family Reunification", href: { pathname: "/policies/family-reunification" } },
-    { title: "Student Visa", href: { pathname: "/policies/student-visa" } },
-    { title: "Travel Documents", href: { pathname: "/policies/travel-documents" } },
+  const immigrationPolicies: Policy[] = [
+    { title: "Visa Application", href: { pathname: "/policies/visa-application" as Route } },
+    { title: "Work Permit", href: { pathname: "/policies/work-permit" as Route } },
+    { title: "Residence Permit", href: { pathname: "/policies/residence-permit" as Route } },
+    { title: "Citizenship", href: { pathname: "/policies/citizenship" as Route } },
+    { title: "Family Reunification", href: { pathname: "/policies/family-reunification" as Route } },
+    { title: "Student Visa", href: { pathname: "/policies/student-visa" as Route } },
+    { title: "Travel Documents", href: { pathname: "/policies/travel-documents" as Route } },
   ]
 
-  const generalPolicies = [
-    { title: "Privacy Policy", href: { pathname: "/policies/privacy" } },
-    { title: "Terms of Service", href: { pathname: "/policies/terms" } },
-    { title: "Refund Policy", href: { pathname: "/policies/refund" } },
-    { title: "Compliance", href: { pathname: "/policies/compliance" } },
-    { title: "Accessibility", href: { pathname: "/policies/accessibility" } },
-    { title: "Document Accuracy", href: { pathname: "/policies/document-accuracy" } },
-    { title: "Contact", href: { pathname: "/policies/contact" } },
+  const generalPolicies: Policy[] = [
+    { title: "Privacy Policy", href: { pathname: "/policies/privacy" as Route } },
+    { title: "Terms of Service", href: { pathname: "/policies/terms" as Route } },
+    { title: "Refund Policy", href: { pathname: "/policies/refund" as Route } },
+    { title: "Compliance", href: { pathname: "/policies/compliance" as Route } },
+    { title: "Accessibility", href: { pathname: "/policies/accessibility" as Route } },
+    { title: "Document Accuracy", href: { pathname: "/policies/document-accuracy" as Route } },
+    { title: "Contact", href: { pathname: "/policies/contact" as Route } },
   ]
 
   return (
