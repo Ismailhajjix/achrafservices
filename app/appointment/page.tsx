@@ -274,52 +274,50 @@ export default function AppointmentPage() {
     return true
   }
 
+  const validateAllSteps = () => {
+    // Validate personal info
+    if (!formData.personalInfo.fullName || !formData.personalInfo.email || !formData.personalInfo.phone) {
+      return false
+    }
+    // Validate service details
+    if (!formData.serviceDetails.serviceType || !formData.serviceDetails.specificService) {
+      return false
+    }
+    // Validate appointment preferences
+    if (!formData.appointmentPreference.date || !formData.appointmentPreference.agreeToTerms) {
+      return false
+    }
+    return true
+  }
+
   const handleSubmit = async () => {
-    if (!validateCurrentStep()) return
-
     try {
-      // TODO: Implement your form submission logic here
-      console.log('Appointment Details:', formData)
+      // Validate all steps before submission
+      if (!validateAllSteps()) {
+        toast({
+          title: "Validation Error",
+          description: "Please complete all required fields before submitting.",
+          variant: "destructive"
+        })
+        return
+      }
 
+      // Show loading toast
       toast({
-        title: "Appointment Request Submitted",
-        description: "We will review your information and contact you shortly.",
+        title: "Submitting...",
+        description: "Please wait while we process your appointment request."
       })
 
-      // Reset form
-      setFormData({
-        step: 1,
-        personalInfo: {
-          fullName: "",
-          email: "",
-          phone: "",
-          nationality: "",
-          currentResidence: "",
-          preferredLanguage: "",
-          occupation: ""
-        },
-        serviceDetails: {
-          serviceType: "",
-          specificService: "",
-          urgencyLevel: "",
-          preferredContactMethod: ""
-        },
-        documentInfo: {
-          hasPassport: false,
-          hasResidencePermit: false,
-          additionalDocuments: []
-        },
-        appointmentPreference: {
-          date: undefined,
-          time: "",
-          notes: "",
-          agreeToTerms: false
-        }
+      // Success toast
+      toast({
+        title: "Success!",
+        description: "Your appointment request has been submitted successfully.",
+        variant: "default"
       })
     } catch (error) {
       toast({
         title: "Error",
-        description: error instanceof Error ? error.message : "Something went wrong. Please try again.",
+        description: "An error occurred while submitting your request. Please try again.",
         variant: "destructive"
       })
     }

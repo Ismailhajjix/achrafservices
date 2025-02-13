@@ -18,10 +18,7 @@ import {
 } from "@/constants/animations"
 import {
   gradients,
-  shadows,
-  transitions,
-  containers,
-  borders
+  containers
 } from "@/constants/styles"
 
 // Enhanced animation variants
@@ -116,15 +113,15 @@ const ServiceCard: FC<ServiceCardProps> = memo(({ service, index }) => {
         {/* Content Container */}
         <div className="relative z-10 p-6 flex flex-col h-full">
           {/* Icon & Title */}
-          <div className="flex items-start gap-4 mb-6">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-white/10 via-gold/20 to-white/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+          <div className="flex items-start gap-6 mb-6">
+            <div className="w-[44px] h-[44px] rounded-xl bg-gradient-to-br from-white/10 via-gold/20 to-white/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
               <service.icon className="w-6 h-6 text-gold" />
             </div>
             <div>
               <h3 className="text-xl font-semibold text-white group-hover:text-gold transition-colors duration-300">
                 {service.title}
               </h3>
-              <p className="text-white/70 text-sm mt-1">
+              <p className="text-white/90 text-sm mt-1">
                 {service.description}
               </p>
             </div>
@@ -135,7 +132,7 @@ const ServiceCard: FC<ServiceCardProps> = memo(({ service, index }) => {
             {service.details.map((detail, idx) => (
               <div key={idx} className="flex items-start gap-3">
                 <div className="w-1.5 h-1.5 rounded-full bg-gold mt-2" />
-                <p className="text-white/70 group-hover:text-white/90 transition-colors duration-300 text-sm leading-relaxed">
+                <p className="text-white/90 group-hover:text-white transition-colors duration-300 text-sm leading-relaxed">
                   {detail}
                 </p>
               </div>
@@ -143,14 +140,16 @@ const ServiceCard: FC<ServiceCardProps> = memo(({ service, index }) => {
           </div>
 
           {/* Action Button */}
-          <Link href={service.href} className="mt-auto">
+          <Link href={service.href} className="mt-auto block min-h-[44px] min-w-[44px]">
             <motion.div
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="w-full px-4 py-3 bg-gradient-to-r from-gold via-amber-500 to-gold rounded-lg flex items-center justify-center gap-2 text-black font-medium shadow-[0_0_20px_rgba(255,184,0,0.2)] hover:shadow-[0_0_30px_rgba(255,184,0,0.4)] transition-shadow duration-300"
+              role="button"
+              aria-label={`Schedule consultation for ${service.title}`}
+              className="w-full px-6 py-4 bg-gradient-to-r from-[#CC9600] via-[#E6A800] to-[#CC9600] rounded-lg flex items-center justify-center gap-3 text-black font-medium shadow-[0_0_20px_rgba(255,184,0,0.2)] hover:shadow-[0_0_30px_rgba(255,184,0,0.4)] transition-shadow duration-300"
             >
               <span>Schedule Consultation</span>
-              <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
+              <ArrowRight className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1" aria-hidden="true" />
             </motion.div>
           </Link>
         </div>
@@ -274,7 +273,6 @@ export const Services: FC = () => {
             variants={useAnimationVariants().item}
             className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6"
           >
-            <span className="text-white">Our Premium </span>
             <span className={gradients.goldText}>
               {servicesTranslations.title}
             </span>
@@ -282,30 +280,62 @@ export const Services: FC = () => {
 
           <motion.p 
             variants={useAnimationVariants().item}
-            className="text-white/70 text-lg max-w-2xl mx-auto"
+            className="text-white/90 text-lg max-w-2xl mx-auto"
           >
             {servicesTranslations.subtitle}
           </motion.p>
         </motion.div>
 
         {/* Tabs Container */}
-        <div className="flex flex-col sm:flex-row justify-center items-stretch gap-4 mb-12 mx-auto max-w-md sm:max-w-none px-4">
+        <div 
+          role="tablist" 
+          aria-label="Services categories"
+          className="flex flex-col sm:flex-row justify-center items-stretch gap-6 mb-12 mx-auto max-w-md sm:max-w-none px-4"
+        >
           <div className="w-full sm:w-auto">
-            <ServicesTab 
-              isActive={activeTab === 'business'} 
+            <button 
+              role="tab"
+              aria-selected={activeTab === 'business'}
+              aria-controls="business-services-panel"
+              id="business-services-tab"
+              aria-label="Business Services Tab"
               onClick={() => handleTabChange('business')}
+              className={cn(
+                "w-full min-h-[44px] px-8 py-4 rounded-full",
+                "font-medium text-base transition-colors duration-300",
+                "touch-manipulation select-none cursor-pointer",
+                "focus:outline-none focus:ring-2 focus:ring-gold/50",
+                "active:transform active:scale-95",
+                activeTab === 'business'
+                  ? "bg-gradient-to-r from-[#CC9600] via-[#E6A800] to-[#CC9600] text-black shadow-lg shadow-[#CC9600]/20" 
+                  : "bg-white/10 text-white hover:bg-white/20 hover:text-white"
+              )}
             >
-              {servicesTranslations.businessTab}
-            </ServicesTab>
+              <span className="block px-2">{servicesTranslations.businessTab}</span>
+            </button>
           </div>
           
           <div className="w-full sm:w-auto">
-            <ServicesTab 
-              isActive={activeTab === 'immigration'} 
+            <button 
+              role="tab"
+              aria-selected={activeTab === 'immigration'}
+              aria-controls="immigration-services-panel"
+              id="immigration-services-tab"
+              aria-label="Immigration Services Tab"
               onClick={() => handleTabChange('immigration')}
+              className={cn(
+                "w-full min-h-[44px] px-8 py-4 rounded-full",
+                "font-medium text-base transition-colors duration-300",
+                "touch-manipulation select-none cursor-pointer",
+                "focus:outline-none focus:ring-2 focus:ring-gold/50",
+                "active:transform active:scale-95",
+                activeTab === 'immigration'
+                  ? "bg-gradient-to-r from-[#CC9600] via-[#E6A800] to-[#CC9600] text-black shadow-lg shadow-[#CC9600]/20" 
+                  : "bg-white/10 text-white hover:bg-white/20 hover:text-white"
+              )}
             >
-              {servicesTranslations.immigrationTab}
-            </ServicesTab>
+              <span className="block px-2">{servicesTranslations.immigrationTab}</span>
+            </button>
           </div>
         </div>
 
@@ -317,6 +347,9 @@ export const Services: FC = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
+            role="tabpanel"
+            id={`${activeTab}-services-panel`}
+            aria-labelledby={`${activeTab}-services-tab`}
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
           >
             {currentServices.map((service, index) => (

@@ -3,7 +3,7 @@
 import { ArrowRight, MessageSquare, Clock, BarChart2 } from "lucide-react"
 import Image from "next/image"
 import { motion, type Variants } from "framer-motion"
-import { useState, useEffect, useRef } from "react"
+import { useRef } from "react"
 import Link from "next/link"
 import type { Route } from "next"
 

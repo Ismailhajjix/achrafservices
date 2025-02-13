@@ -35,7 +35,7 @@ export function WorkingProcess() {
   const [hoveredStep, setHoveredStep] = useState<number | null>(null)
 
   return (
-    <section className="relative z-20 pt-4 pb-12 sm:pb-16 md:pb-20 lg:pb-24">
+    <section className="relative z-20 pt-16 sm:pt-20 md:pt-24 lg:pt-32 pb-12 sm:pb-16 md:pb-20 lg:pb-24">
       {/* Premium Background Effects */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,184,0,0.08),transparent_70%)]" />
       <div className="absolute inset-0 bg-gradient-to-b from-black via-black/95 to-black" />

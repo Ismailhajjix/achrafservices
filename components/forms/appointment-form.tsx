@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form'
 import { Form } from '@/components/ui/form'
 import { Input } from '@/components/ui/forms/input'
 import { Textarea } from '@/components/ui/forms/textarea'
+import { toast } from '@/components/ui/use-toast'
 
 interface AppointmentFormData {
   fullName: string
@@ -27,9 +28,27 @@ export function AppointmentForm() {
     }
   })
 
-  const onSubmit = async (data: AppointmentFormData) => {
-    // Implementation will be added later
-    console.log(data)
+  const onSubmit = async (_data: AppointmentFormData) => {
+    try {
+      // TODO: Replace with actual API call
+      await new Promise(resolve => setTimeout(resolve, 1000)) // Simulate API call
+
+      // Form submission success notification
+      toast({
+        title: "Appointment Request Submitted",
+        description: "We will review your information and contact you shortly.",
+        variant: "default"
+      })
+
+      // Reset form after successful submission
+      form.reset()
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "An error occurred while submitting your appointment request.",
+        variant: "destructive"
+      })
+    }
   }
 
   return (

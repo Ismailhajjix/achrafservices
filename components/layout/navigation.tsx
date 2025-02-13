@@ -3,19 +3,10 @@
 import Image from "next/image"
 import Link from "next/link"
 import { useState, useEffect, useCallback, useRef } from "react"
-import { Menu, X } from "lucide-react"
+import { Menu, X, Facebook, Instagram, Twitter, Linkedin, Phone, Mail, MapPin } from "lucide-react"
 import { useRouter, usePathname } from "next/navigation"
 import { motion } from "framer-motion"
 import { cn } from "@/lib/utils"
-import type { Route } from "next"
-
-type AppRoute = 
-  | "/"
-  | "/services" 
-  | "/about"
-  | "/success-stories"
-  | "/contact"
-  | "/appointment"
 
 type SectionId = 
   | "hero"
@@ -28,7 +19,7 @@ type SectionId =
 
 interface NavItem {
   label: string
-  href: AppRoute
+  href: string
   sectionId?: SectionId
 }
 
@@ -39,6 +30,19 @@ const navItems: NavItem[] = [
   { label: "Destinations", href: "/", sectionId: "choose-your-destination" },
   { label: "Testimonials", href: "/", sectionId: "success-stories" },
   { label: "Contact us", href: "/", sectionId: "contact-form" }
+]
+
+const socialLinks = [
+  { icon: Facebook, href: "https://facebook.com/achrafservices", label: "Facebook" },
+  { icon: Instagram, href: "https://instagram.com/achrafservices", label: "Instagram" },
+  { icon: Twitter, href: "https://twitter.com/achrafservices", label: "Twitter" },
+  { icon: Linkedin, href: "https://linkedin.com/company/achrafservices", label: "LinkedIn" }
+]
+
+const companyInfo = [
+  { icon: Phone, info: "06 64 69 05 55", href: "tel:+212664690555" },
+  { icon: Mail, info: "contact@achrafservices.ma", href: "mailto:contact@achrafservices.ma" },
+  { icon: MapPin, info: "Nador, Morocco", href: "https://maps.google.com/?q=Nador+Morocco" }
 ]
 
 type NavLinkProps = {
@@ -53,9 +57,30 @@ export function Navigation() {
   const [activeSection, setActiveSection] = useState<string>("home")
   const router = useRouter()
   const pathname = usePathname()
-  const lastScrollPosition = useRef(0)
   const isScrolling = useRef(false)
-  const scrollTimeout = useRef<NodeJS.Timeout>()
+  const timeoutRef = useRef<NodeJS.Timeout>()
+
+  // Handle body scroll locking when menu is open
+  useEffect(() => {
+    if (isMenuOpen) {
+      // Lock scroll
+      document.body.style.overflow = 'hidden'
+      document.body.style.height = '100vh'
+      document.body.style.touchAction = 'none'
+    } else {
+      // Restore scroll
+      document.body.style.overflow = ''
+      document.body.style.height = ''
+      document.body.style.touchAction = ''
+    }
+
+    // Cleanup function
+    return () => {
+      document.body.style.overflow = ''
+      document.body.style.height = ''
+      document.body.style.touchAction = ''
+    }
+  }, [isMenuOpen])
 
   const scrollToSection = useCallback((sectionId: string, immediate = false) => {
     const section = document.getElementById(sectionId)
@@ -79,12 +104,12 @@ export function Navigation() {
       setActiveSection(sectionId)
 
       // Clear any existing timeout
-      if (scrollTimeout.current) {
-        clearTimeout(scrollTimeout.current)
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
       }
 
       // Set new timeout
-      scrollTimeout.current = setTimeout(() => {
+      timeoutRef.current = setTimeout(() => {
         isScrolling.current = false
       }, immediate ? 0 : 1000)
     }
@@ -215,6 +240,26 @@ export function Navigation() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [activeSection])
 
+  // Handle scroll events
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY
+      setIsScrolled(scrollPosition > 0)
+
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+      }
+
+      isScrolling.current = true
+      timeoutRef.current = setTimeout(() => {
+        isScrolling.current = false
+      }, 150)
+    }
+
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
   const NavLink = ({ item, onClose }: NavLinkProps) => {
     const isActive = item.sectionId 
       ? activeSection === item.sectionId
@@ -230,9 +275,7 @@ export function Navigation() {
           "relative group px-3 py-1.5 rounded-full transition-all duration-300",
           isActive 
             ? "bg-gradient-to-r from-[#FFB800] via-amber-500 to-[#FFB800] text-black border-2 border-white/90 shadow-[inset_0_-2px_4px_rgba(0,0,0,0.2),inset_0_2px_4px_rgba(255,255,255,0.8)] hover:shadow-[inset_0_-3px_6px_rgba(0,0,0,0.3),inset_0_3px_6px_rgba(255,255,255,0.9)] transform-gpu -translate-y-[1px] hover:-translate-y-[2px]" 
-            : isPastHero
-              ? "text-black font-bold hover:bg-black/10"
-              : "text-white/90 hover:text-white hover:bg-white/5"
+            : "text-white/90 hover:text-white hover:bg-white/10 backdrop-blur-sm"
         )}
       >
         <div className={cn(
@@ -241,12 +284,12 @@ export function Navigation() {
         )}>
           <span className={cn(
             "text-sm font-medium tracking-wide capitalize transition-colors",
-            isActive ? "text-black font-bold" : isPastHero ? "text-black font-bold" : "text-white/90 group-hover:text-white"
+            isActive ? "text-black font-bold" : "text-white/90 group-hover:text-white"
           )}>
             {item.label}
           </span>
         </div>
-        {!isActive && !isPastHero && (
+        {!isActive && (
           <span className="absolute -bottom-1 left-0 h-[2px] bg-gradient-to-r from-[#FFB800] via-amber-500 to-[#FFB800] transition-all duration-300 w-0 group-hover:w-full" />
         )}
       </button>
@@ -259,19 +302,17 @@ export function Navigation() {
       <div className={cn(
         "transition-all duration-500",
         isScrolled 
-          ? isPastHero
-            ? "bg-black/95 backdrop-blur-xl shadow-[0_8px_32px_rgba(255,184,0,0.15)] border-b border-gold/20"
-            : "bg-black/90 backdrop-blur-lg shadow-lg"
+          ? "bg-black/95 backdrop-blur-xl shadow-[0_8px_32px_rgba(255,184,0,0.15)] border-b border-gold/20"
           : "bg-transparent"
       )}>
         <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between h-20">
+          <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <button 
               onClick={() => handleNavigation({ label: "Home", href: "/" })}
               className="relative"
             >
-              <div className="relative h-[80px] w-[240px]">
+              <div className="relative h-[60px] w-[180px]">
                 <Image 
                   src="/images/header-logo.png" 
                   alt="Agence Achraf Services"
@@ -283,7 +324,7 @@ export function Navigation() {
             </button>
 
             {/* Desktop Navigation */}
-            <nav className="hidden md:flex items-center gap-4 px-6 py-2 mx-4 rounded-full relative">
+            <nav className="hidden md:flex items-center gap-2 px-4 py-1.5 mx-4 rounded-full relative">
               {/* Premium 3D Border Container */}
               <div className={cn(
                 "absolute inset-0 rounded-full p-[1.5px] bg-gradient-to-r from-[#FFB800] via-amber-500 to-[#FFB800] transition-all duration-500",
@@ -323,48 +364,185 @@ export function Navigation() {
             {/* Mobile Menu Button */}
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="md:hidden text-white p-2 hover:bg-white/10 rounded-lg transition-colors"
-              aria-label={isMenuOpen ? "Close menu" : "Open menu"}
-              aria-expanded={isMenuOpen}
+              className="md:hidden relative z-50 w-10 h-10 flex items-center justify-center"
+              aria-label="Toggle menu"
             >
-              {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+              <motion.div
+                initial={false}
+                animate={isMenuOpen ? "open" : "closed"}
+              >
+                {isMenuOpen ? (
+                  <X className="w-6 h-6 text-white" />
+                ) : (
+                  <Menu className="w-6 h-6 text-white" />
+                )}
+              </motion.div>
             </button>
+
+            {/* Mobile Menu */}
+            <motion.div
+              initial={{ opacity: 0, x: "100%" }}
+              animate={{
+                opacity: isMenuOpen ? 1 : 0,
+                x: isMenuOpen ? "0%" : "100%",
+              }}
+              transition={{
+                type: "spring",
+                stiffness: 100,
+                damping: 20
+              }}
+              className={cn(
+                "fixed inset-0 md:hidden z-40 flex flex-col",
+                "bg-gradient-to-b from-black/98 via-black/99 to-black/98",
+                "backdrop-blur-3xl border-l border-gold/30",
+                isMenuOpen ? "pointer-events-auto" : "pointer-events-none delay-200"
+              )}
+            >
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ 
+                  opacity: isMenuOpen ? 1 : 0,
+                  y: isMenuOpen ? 0 : 20
+                }}
+                transition={{ delay: 0.1 }}
+                className="flex flex-col items-center min-h-screen px-4 pt-20 pb-6 overflow-y-auto relative"
+              >
+                {/* Background Pattern */}
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,184,0,0.03),transparent_70%)]" />
+                <div className="absolute inset-0 bg-[linear-gradient(45deg,rgba(255,184,0,0.02)_1px,transparent_1px),linear-gradient(-45deg,rgba(255,184,0,0.02)_1px,transparent_1px)] bg-[size:20px_20px] opacity-30" />
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/50 to-transparent" />
+                
+                <div className="relative z-10 w-full max-w-sm">
+                  {/* Logo */}
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ 
+                      opacity: isMenuOpen ? 1 : 0,
+                      scale: isMenuOpen ? 1 : 0.9
+                    }}
+                    transition={{ delay: 0.2 }}
+                    className="mb-12 flex justify-center relative"
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-r from-gold/20 via-transparent to-gold/20 blur-2xl" />
+                    <Image
+                      src="/images/header-logo.png"
+                      alt="Agence Achraf Services"
+                      width={160}
+                      height={48}
+                      className="w-auto h-[48px] relative z-10"
+                      priority
+                    />
+                  </motion.div>
+
+                  {/* Navigation Items */}
+                  <div className="w-full space-y-3">
+                    {navItems.map((item, index) => (
+                      <motion.div
+                        key={item.label}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ 
+                          opacity: isMenuOpen ? 1 : 0,
+                          y: isMenuOpen ? 0 : 20 
+                        }}
+                        transition={{ delay: 0.3 + index * 0.1 }}
+                      >
+                        <button
+                          onClick={() => {
+                            handleNavigation(item)
+                            setIsMenuOpen(false)
+                          }}
+                          className={cn(
+                            "w-full px-6 py-4 rounded-xl text-base font-medium transition-all duration-300",
+                            "bg-black/60 backdrop-blur-xl",
+                            "border border-gold/20 hover:border-gold/40",
+                            "hover:bg-black/40 hover:scale-[1.02] hover:-translate-y-0.5",
+                            "shadow-[0_0_15px_rgba(0,0,0,0.3)] hover:shadow-[0_0_20px_rgba(255,184,0,0.15)]",
+                            "active:scale-[0.98]",
+                            activeSection === item.sectionId
+                              ? "bg-gradient-to-r from-[#FFB800] via-amber-500 to-[#FFB800] text-black border-white shadow-[0_0_20px_rgba(255,184,0,0.3)]"
+                              : "text-white/90 hover:text-white"
+                          )}
+                        >
+                          <div className="relative">
+                            <div className="absolute inset-0 bg-gradient-to-r from-gold/10 via-transparent to-gold/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                            <span className="relative z-10">{item.label}</span>
+                          </div>
+                        </button>
+                      </motion.div>
+                    ))}
+                  </div>
+
+                  {/* Company Info */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ 
+                      opacity: isMenuOpen ? 1 : 0,
+                      y: isMenuOpen ? 0 : 20 
+                    }}
+                    transition={{ delay: 0.4 + navItems.length * 0.1 }}
+                    className="w-full mt-10 space-y-3"
+                  >
+                    {companyInfo.map((item, index) => (
+                      <Link
+                        key={index}
+                        href={item.href}
+                        className="group flex items-center gap-4 px-6 py-4 rounded-xl bg-black/60 backdrop-blur-xl border border-gold/20 hover:border-gold/40 hover:bg-black/40 transition-all duration-300 shadow-[0_0_15px_rgba(0,0,0,0.3)] hover:shadow-[0_0_20px_rgba(255,184,0,0.15)]"
+                      >
+                        <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-gold/20 via-gold/10 to-transparent flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                          <item.icon className="w-5 h-5 text-gold" />
+                        </div>
+                        <span className="text-white/90">{item.info}</span>
+                      </Link>
+                    ))}
+                  </motion.div>
+
+                  {/* Social Links */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ 
+                      opacity: isMenuOpen ? 1 : 0,
+                      y: isMenuOpen ? 0 : 20 
+                    }}
+                    transition={{ delay: 0.5 + navItems.length * 0.1 }}
+                    className="flex justify-center gap-4 mt-10"
+                  >
+                    {socialLinks.map((social, index) => (
+                      <Link
+                        key={index}
+                        href={social.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="group p-4 rounded-xl bg-black/60 backdrop-blur-xl border border-gold/20 hover:border-gold/40 hover:bg-black/40 transition-all duration-300 hover:scale-110 shadow-[0_0_15px_rgba(0,0,0,0.3)] hover:shadow-[0_0_20px_rgba(255,184,0,0.15)]"
+                      >
+                        <social.icon className="w-5 h-5 text-gold transition-transform duration-300 group-hover:scale-110" />
+                        <span className="sr-only">{social.label}</span>
+                      </Link>
+                    ))}
+                  </motion.div>
+
+                  {/* Copyright */}
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: isMenuOpen ? 1 : 0 }}
+                    transition={{ delay: 0.6 + navItems.length * 0.1 }}
+                    className="mt-auto pt-10 text-center text-xs text-white/50"
+                  >
+                    ©2024 Agence Achraf Services • Built by{" "}
+                    <a 
+                      href="https://nadevo.ma/" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-gold transition-colors hover:text-gold/80"
+                    >
+                      @nadevogroupe
+                    </a>
+                  </motion.div>
+                </div>
+              </motion.div>
+            </motion.div>
           </div>
         </div>
       </div>
-
-      {/* Mobile Menu */}
-      <motion.div 
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: isMenuOpen ? 1 : 0, y: isMenuOpen ? 0 : -10 }}
-        transition={{ duration: 0.2 }}
-        className={cn(
-          "md:hidden",
-          isScrolled ? "bg-black/95 backdrop-blur-lg" : "bg-transparent",
-          "border-t border-white/10",
-          !isMenuOpen && "pointer-events-none"
-        )}
-        aria-hidden={!isMenuOpen}
-      >
-        <div className="container mx-auto px-4 py-4">
-          <nav className="flex flex-col gap-4">
-            {navItems.map((item) => (
-              <NavLink 
-                key={item.label} 
-                item={item}
-                onClose={() => setIsMenuOpen(false)}
-              />
-            ))}
-            <Link
-              href={{ pathname: "/appointment" }}
-              className="bg-[#FFB800] text-black px-4 py-3 rounded-lg font-medium hover:bg-[#FFB800]/90 transition-all text-center mt-2"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Book Now
-            </Link>
-          </nav>
-        </div>
-      </motion.div>
     </header>
   )
 } 

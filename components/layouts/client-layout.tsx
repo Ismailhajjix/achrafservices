@@ -1,7 +1,7 @@
- "use client"
+"use client"
 
 import { Navigation } from "@/components/layout/navigation"
-import { Footer } from "@/components/footer/footer"
+import { Footer } from "@/components/layouts/footer"
 import { WhatsAppButton } from "@/components/ui/whatsapp-button"
 import { useEffect, useState } from "react"
 

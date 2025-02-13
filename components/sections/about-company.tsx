@@ -87,7 +87,7 @@ export function AboutCompany() {
               <div className="text-white/95 mb-1 sm:mb-2">Transform Your Future with</div>
               <div className="relative">
                 <span className="bg-gradient-to-r from-gold via-amber-500 to-gold bg-clip-text text-transparent">
-                  19+ Premium Services
+                19+ Premium Services
                 </span>
               </div>
             </motion.h2>

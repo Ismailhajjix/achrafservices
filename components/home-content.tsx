@@ -1,7 +1,7 @@
 "use client"
 
 import dynamic from 'next/dynamic'
-import { Suspense, useState, useEffect, useCallback } from 'react'
+import { Suspense, useState, useEffect } from 'react'
 import { useInView } from 'react-intersection-observer'
 import type { FC } from 'react'
 
@@ -12,176 +12,132 @@ const LoadingPlaceholder: FC<{ height: string }> = ({ height }) => (
 )
 LoadingPlaceholder.displayName = 'LoadingPlaceholder'
 
-// Priority loading for above-the-fold content
-const Hero = dynamic(() => import('@/components/sections/hero').then(mod => mod.Hero), {
-  loading: () => <LoadingPlaceholder height="min-h-[85vh]" />,
-  ssr: true // Enable SSR for hero section
-})
+// Optimize dynamic imports with better chunking
+const Hero = dynamic(() => 
+  import('@/components/sections/hero').then(mod => mod.Hero), 
+  { 
+    loading: () => <LoadingPlaceholder height="min-h-[85vh]" />,
+    ssr: true 
+  }
+)
 
-// Progressive loading for critical sections with chunking
+// Add AboutCompany import
+const AboutCompany = dynamic(() => 
+  import('@/components/sections/about-company').then(mod => mod.AboutCompany), 
+  { 
+    loading: () => <LoadingPlaceholder height="min-h-[100vh]" />,
+    ssr: false
+  }
+)
+
+// Group business sections for better code splitting
 const Services = dynamic(() => 
-  import('@/components/sections/services')
-    .then(mod => mod.Services)
-    .catch(() => {
-      function ServicesFallback() {
-        return <div>Failed to load Services</div>
-      }
-      return ServicesFallback
-    }), 
-  {
+  import('@/components/sections/business-sections').then(mod => mod.Services), 
+  { 
     loading: () => <LoadingPlaceholder height="min-h-[100vh]" />,
     ssr: false
   }
 )
 
 const WorkingProcess = dynamic(() => 
-  import('@/components/sections/working-process')
-    .then(mod => mod.WorkingProcess)
-    .catch(() => {
-      function WorkingProcessFallback() {
-        return <div>Failed to load Working Process</div>
-      }
-      return WorkingProcessFallback
-    }), 
-  {
-    loading: () => <LoadingPlaceholder height="min-h-[60vh]" />,
-    ssr: false
-  }
-)
-
-const AboutCompany = dynamic(() => 
-  import('@/components/sections/about-company')
-    .then(mod => mod.AboutCompany)
-    .catch(() => {
-      function AboutFallback() {
-        return <div>Failed to load About</div>
-      }
-      return AboutFallback
-    }),
-  {
-    loading: () => <LoadingPlaceholder height="min-h-[60vh]" />,
-    ssr: false
-  }
-)
-
-// Deferred loading for non-critical sections with error handling
-const ChooseYourDestination = dynamic(() => 
-  import('@/components/sections/choose-your-destination')
-    .then(mod => mod.ChooseYourDestination)
-    .catch(() => {
-      function DestinationsFallback() {
-        return <div>Failed to load Destinations</div>
-      }
-      return DestinationsFallback
-    }),
-  {
+  import('@/components/sections/working-process').then(mod => mod.WorkingProcess), 
+  { 
     loading: () => <LoadingPlaceholder height="min-h-[100vh]" />,
     ssr: false
   }
 )
 
+// Optimize remaining sections with better chunking
+const ChooseYourDestination = dynamic(() => 
+  import('@/components/sections/choose-your-destination').then(mod => mod.ChooseYourDestination), 
+  { 
+    loading: () => <LoadingPlaceholder height="min-h-[100vh]" />,
+    ssr: false // Defer loading until client-side
+  }
+)
+
 const Testimonials = dynamic(() => 
-  import('@/components/sections/testimonials')
-    .then(mod => mod.Testimonials)
-    .catch(() => {
-      function TestimonialsFallback() {
-        return <div>Failed to load Testimonials</div>
-      }
-      return TestimonialsFallback
-    }),
-  {
+  import('@/components/sections/testimonials').then(mod => mod.Testimonials), 
+  { 
     loading: () => <LoadingPlaceholder height="min-h-[80vh]" />,
-    ssr: false
+    ssr: false // Defer loading until client-side
   }
 )
 
 const ContactForm = dynamic(() => 
-  import('@/components/sections/contact-form')
-    .then(mod => mod.ContactForm)
-    .catch(() => {
-      function ContactFormFallback() {
-        return <div>Failed to load Contact Form</div>
-      }
-      return ContactFormFallback
-    }),
-  {
+  import('@/components/sections/contact-form').then(mod => mod.ContactForm), 
+  { 
     loading: () => <LoadingPlaceholder height="min-h-[60vh]" />,
-    ssr: false
+    ssr: false // Defer loading until client-side
   }
 )
 
 export function HomeContent() {
   const [mounted, setMounted] = useState(false)
-  const { ref: servicesRef, inView: servicesInView } = useInView({ 
-    triggerOnce: true, 
+  
+  // Optimize intersection observer usage with higher thresholds
+  const { ref: criticalSectionsRef, inView: criticalSectionsInView } = useInView({
+    triggerOnce: true,
     threshold: 0.1,
-    rootMargin: '100px' // Start loading 100px before section comes into view
+    rootMargin: '100px'
   })
-  const { ref: laterSectionsRef, inView: laterSectionsInView } = useInView({ 
-    triggerOnce: true, 
+  
+  const { ref: deferredSectionsRef, inView: deferredSectionsInView } = useInView({
+    triggerOnce: true,
     threshold: 0.1,
-    rootMargin: '200px' // Start loading 200px before section comes into view
+    rootMargin: '200px'
   })
 
-  // Memoized preload function
-  const preloadCriticalSections = useCallback(async () => {
-    try {
-      await Promise.all([
-        import('@/components/sections/services'),
-        import('@/components/sections/about-company')
-      ])
-      return { success: true }
-    } catch (error) {
-      console.error('Failed to preload critical sections:', error)
-      return { success: false }
+  // Use requestIdleCallback for non-critical initialization
+  useEffect(() => {
+    if ('requestIdleCallback' in window) {
+      const idleCallback = requestIdleCallback(() => setMounted(true))
+      return () => cancelIdleCallback(idleCallback)
+    } else {
+      const timeoutId = setTimeout(() => setMounted(true), 1000)
+      return () => clearTimeout(timeoutId)
     }
   }, [])
 
+  // Preload critical resources during idle time
   useEffect(() => {
-    setMounted(true)
-    
-    // Preload critical sections after hero with retry logic
-    if (mounted) {
-      let retryCount = 0
-      const maxRetries = 3
-      
-      const attemptPreload = async () => {
-        const { success } = await preloadCriticalSections()
-        if (!success && retryCount < maxRetries) {
-          retryCount++
-          setTimeout(attemptPreload, 1000 * retryCount) // Exponential backoff
-        }
+    if (mounted && 'requestIdleCallback' in window) {
+      const preloadCriticalResources = () => {
+        const prefetchLink = document.createElement('link')
+        prefetchLink.rel = 'prefetch'
+        prefetchLink.href = '/images/hero-bg.jpg'
+        document.head.appendChild(prefetchLink)
       }
       
-      attemptPreload()
+      requestIdleCallback(preloadCriticalResources)
     }
-  }, [mounted, preloadCriticalSections])
+  }, [mounted])
 
   return (
     <div className="flex flex-col">
-      {/* Above the fold - Immediate load */}
+      {/* Immediate load for above-the-fold content */}
       <Hero />
       
-      {/* Critical sections - Load when approaching viewport */}
-      <div ref={servicesRef}>
-        {mounted && servicesInView && (
+      {/* Load critical sections when approaching viewport */}
+      <div ref={criticalSectionsRef}>
+        {mounted && criticalSectionsInView && (
           <>
             <Suspense fallback={<LoadingPlaceholder height="min-h-[100vh]" />}>
               <Services />
             </Suspense>
-            <Suspense fallback={<LoadingPlaceholder height="min-h-[60vh]" />}>
-              <WorkingProcess />
-            </Suspense>
-            <Suspense fallback={<LoadingPlaceholder height="min-h-[60vh]" />}>
+            <Suspense fallback={<LoadingPlaceholder height="min-h-[100vh]" />}>
               <AboutCompany />
+            </Suspense>
+            <Suspense fallback={<LoadingPlaceholder height="min-h-[100vh]" />}>
+              <WorkingProcess />
             </Suspense>
           </>
         )}
       </div>
 
-      {/* Deferred sections - Progressive loading */}
-      <div ref={laterSectionsRef}>
-        {mounted && laterSectionsInView && (
+      {/* Defer loading of non-critical sections */}
+      <div ref={deferredSectionsRef}>
+        {mounted && deferredSectionsInView && (
           <>
             <Suspense fallback={<LoadingPlaceholder height="min-h-[100vh]" />}>
               <ChooseYourDestination />
