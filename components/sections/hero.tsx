@@ -1,14 +1,11 @@
 "use client"
 
-import { Button } from "@/components/ui/forms/button"
-import { Input } from "@/components/ui/forms/input"
-import { Search, Clock, BarChart2, ArrowRight, Star, MessageSquare } from "lucide-react"
+import { ArrowRight, MessageSquare, Clock, BarChart2 } from "lucide-react"
 import Image from "next/image"
-import { motion } from "framer-motion"
-import type { Variants } from "framer-motion"
-import { useState, useEffect } from "react"
-import { cn } from "@/lib/utils"
+import { motion, type Variants } from "framer-motion"
+import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
+import type { Route } from "next"
 
 const floatingAnimation: Variants = {
   initial: { 
@@ -18,12 +15,12 @@ const floatingAnimation: Variants = {
     scale: 0.9
   },
   animate: { 
-    y: [-8, 8, -8],
-    x: [-6, 6, -6],
+    y: [-15, 15, -15],
+    x: [-12, 12, -12],
     opacity: 1,
     scale: 1,
     transition: {
-      duration: 6,
+      duration: 8,
       repeat: Infinity,
       ease: "easeInOut",
       repeatType: "mirror",
@@ -39,10 +36,10 @@ const floatingAnimationReverse: Variants = {
     x: 0 
   },
   animate: { 
-    y: [8, -8, 8],
-    x: [6, -6, 6],
+    y: [15, -15, 15],
+    x: [12, -12, 12],
     transition: {
-      duration: 6,
+      duration: 8,
       repeat: Infinity,
       ease: "easeInOut",
       repeatType: "mirror"
@@ -50,327 +47,176 @@ const floatingAnimationReverse: Variants = {
   }
 }
 
-// Mobile Content Component
-const MobileContent = () => {
-  const handleContactClick = () => {
-    const contactSection = document.getElementById('contact-form')
-    if (contactSection) {
-      contactSection.scrollIntoView({ behavior: 'smooth' })
-    }
-  }
-
-  return (
-    <div className="lg:hidden w-full flex flex-col items-center">
-      {/* Logo Circle with Stats */}
-      <div className="relative">
-        {/* Logo Circle */}
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.8, rotate: -5 }}
-          animate={{ opacity: 1, scale: 1, rotate: 0 }}
-          transition={{ duration: 1.2, delay: 0.2, ease: "easeOut" }}
-          className="w-[220px] h-[220px] xs:w-[260px] xs:h-[260px] sm:w-[300px] sm:h-[300px] md:w-[340px] md:h-[340px] relative overflow-hidden rounded-full"
-        >
-          <div className="absolute inset-0 rounded-full border-2 border-gold/30 z-20">
-            <div className="absolute inset-0 rounded-full">
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,184,0,0.15),transparent_70%)] animate-pulse"></div>
-            </div>
-          </div>
-          
-          <div className="absolute inset-[3px] rounded-full overflow-hidden bg-black">
-            <Image 
-              src="/images/home.jpg" 
-              alt="Agence Achraf Services"
-              width={400}
-              height={400}
-              className="w-full h-full object-cover"
-              priority={true}
-            />
-          </div>
-        </motion.div>
-
-        {/* Stats Cards */}
-        <motion.div
-          variants={floatingAnimation}
-          initial="initial"
-          animate="animate"
-          className="absolute -top-1 -right-1 rounded-lg py-1 sm:py-1.5 px-2 sm:px-3 flex items-center gap-1.5 sm:gap-2 bg-black/80 backdrop-blur-sm border border-gold/20 shadow-[0_0_15px_rgba(255,184,0,0.1)]"
-        >
-          <div className="w-6 h-6 sm:w-8 sm:h-8 bg-[#FFB800] rounded-lg flex items-center justify-center text-black">
-            <Clock className="w-3 h-3 sm:w-4 sm:h-4" />
-          </div>
-          <div>
-            <div className="text-white font-medium text-xs sm:text-sm whitespace-nowrap">9AM - 5PM</div>
-            <div className="text-zinc-400 text-[10px] sm:text-xs whitespace-nowrap">Working Hours</div>
-          </div>
-        </motion.div>
-
-        <motion.div
-          variants={floatingAnimationReverse}
-          initial="initial"
-          animate="animate"
-          className="absolute -bottom-1 -left-1 rounded-lg py-1 sm:py-1.5 px-2 sm:px-3 flex items-center gap-1.5 sm:gap-2 bg-black/80 backdrop-blur-sm border border-gold/20 shadow-[0_0_15px_rgba(255,184,0,0.1)]"
-        >
-          <div className="w-6 h-6 sm:w-8 sm:h-8 bg-[#FFB800] rounded-lg flex items-center justify-center text-black">
-            <BarChart2 className="w-3 h-3 sm:w-4 sm:h-4" />
-          </div>
-          <div>
-            <div className="text-white font-medium text-xs sm:text-sm whitespace-nowrap">15+ Services</div>
-            <div className="text-zinc-400 text-[10px] sm:text-xs whitespace-nowrap">Professional Solutions</div>
-          </div>
-        </motion.div>
-      </div>
-
-      {/* Mobile Buttons */}
-      <div className="w-full px-4 mt-6 sm:mt-8 flex flex-col xs:flex-row gap-3 sm:gap-4">
-        <Link href={{ pathname: "/appointment" }} className="w-full xs:w-1/2">
-          <motion.button
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.6 }}
-            className="w-full px-6 py-3 bg-gradient-to-r from-gold via-amber-500 to-gold rounded-lg text-black font-medium hover:shadow-lg hover:shadow-gold/20 transition-all duration-300"
-          >
-            Get Started
-            <ArrowRight className="inline-block ml-2 w-4 h-4" />
-          </motion.button>
-        </Link>
-        <motion.button
-          onClick={handleContactClick}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.7 }}
-          className="w-full xs:w-1/2 px-6 py-3 bg-black/50 backdrop-blur-xl border border-gold/30 rounded-lg text-white font-medium hover:bg-black/70 hover:border-gold/50 transition-all duration-300"
-        >
-          Contact Support
-          <MessageSquare className="inline-block ml-2 w-4 h-4" />
-        </motion.button>
-      </div>
-    </div>
-  )
-}
-
-// Desktop Content Component
-const DesktopContent = () => {
-  const handleContactClick = () => {
-    const contactSection = document.getElementById('contact-form')
-    if (contactSection) {
-      contactSection.scrollIntoView({ behavior: 'smooth' })
-    }
-  }
-
-  return (
-    <div className="hidden lg:flex relative w-auto justify-center -mt-6">
-      <div className="relative">
-        {/* Logo Circle with Stats */}
-        <div className="relative">
-          {/* Logo Circle */}
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.8, rotate: -5 }}
-            animate={{ opacity: 1, scale: 1, rotate: 0 }}
-            transition={{ duration: 1.2, delay: 0.2, ease: "easeOut" }}
-            className="w-[320px] xl:w-[360px] h-[320px] xl:h-[360px] relative overflow-hidden rounded-full"
-          >
-            <div className="absolute inset-0 rounded-full border-2 border-gold/30 z-20">
-              <div className="absolute inset-0 rounded-full">
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,184,0,0.15),transparent_70%)] animate-pulse"></div>
-              </div>
-            </div>
-            
-            <div className="absolute inset-[3px] rounded-full overflow-hidden bg-black">
-              <Image 
-                src="/images/home.jpg" 
-                alt="Agence Achraf Services"
-                width={400}
-                height={400}
-                className="w-full h-full object-cover"
-                priority={true}
-              />
-            </div>
-          </motion.div>
-
-          {/* Stats Cards */}
-          <motion.div
-            variants={floatingAnimation}
-            initial="initial"
-            animate="animate"
-            className="absolute -top-6 lg:-top-8 -right-2 lg:-right-4 rounded-xl py-1.5 lg:py-2 px-3 lg:px-4 flex items-center gap-2 lg:gap-3 bg-black/50 backdrop-blur-md border border-gold/20 shadow-[0_0_30px_rgba(255,184,0,0.1)]"
-          >
-            <div className="w-8 lg:w-10 h-8 lg:h-10 bg-gradient-to-br from-[#FFB800] to-[#FFCD4D] rounded-lg flex items-center justify-center text-black">
-              <Clock className="w-4 lg:w-5 h-4 lg:h-5" />
-            </div>
-            <div>
-              <div className="text-white font-medium text-sm whitespace-nowrap">9AM - 5PM</div>
-              <div className="text-zinc-400 text-xs whitespace-nowrap">Working Hours</div>
-            </div>
-          </motion.div>
-
-          <motion.div
-            variants={floatingAnimationReverse}
-            initial="initial"
-            animate="animate"
-            className="absolute -bottom-6 lg:-bottom-8 -left-2 lg:-left-4 rounded-xl py-1.5 lg:py-2 px-3 lg:px-4 flex items-center gap-2 lg:gap-3 bg-black/50 backdrop-blur-md border border-gold/20 shadow-[0_0_30px_rgba(255,184,0,0.1)]"
-          >
-            <div className="w-8 lg:w-10 h-8 lg:h-10 bg-gradient-to-br from-[#FFB800] to-[#FFCD4D] rounded-lg flex items-center justify-center text-black">
-              <BarChart2 className="w-4 lg:w-5 h-4 lg:h-5" />
-            </div>
-            <div>
-              <div className="text-white font-medium text-sm whitespace-nowrap">15+ Services</div>
-              <div className="text-zinc-400 text-xs whitespace-nowrap">Professional Solutions</div>
-            </div>
-          </motion.div>
-        </div>
-      </div>
-    </div>
-  )
-}
-
 export function Hero() {
-  const [mounted, setMounted] = useState(false)
-  
+  const sectionRef = useRef<HTMLElement>(null)
+
   const handleContactClick = () => {
     const contactSection = document.getElementById('contact-form')
     if (contactSection) {
-      contactSection.scrollIntoView({ behavior: 'smooth' })
+      // Calculate header offset (accounting for navigation height)
+      const headerOffset = 64
+      const elementPosition = contactSection.getBoundingClientRect().top
+      const offsetPosition = elementPosition + window.pageYOffset - headerOffset
+
+      // Use requestAnimationFrame to ensure smooth scrolling
+      requestAnimationFrame(() => {
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: "smooth"
+        })
+      })
     }
   }
 
-  useEffect(() => {
-    setMounted(true)
-  }, [])
-
-  // Shared background component
-  const BackgroundImage = () => (
-    <div className="absolute inset-0">
-      <Image
-        src="/images/hero-bg.jpg"
-        alt="Hero Background"
-        fill
-        className={cn(
-          "object-cover object-center",
-          mounted && "scale-[1.02] transform motion-safe:animate-subtle-zoom",
-          "brightness-[0.7]"
-        )}
-        priority={true}
-        sizes="100vw"
-        quality={90}
-      />
-      <div className="absolute inset-0 bg-gradient-to-b from-black/95 via-black/80 to-black/95" />
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(255,184,0,0.15),transparent_70%)]" />
-      <div className="absolute inset-0 bg-[linear-gradient(45deg,rgba(255,184,0,0.05)_1px,transparent_1px),linear-gradient(-45deg,rgba(255,184,0,0.05)_1px,transparent_1px)] bg-[size:40px_40px] opacity-30" />
-    </div>
-  )
-
   return (
-    <div className="relative min-h-[calc(100vh-80px)] flex items-center justify-center overflow-hidden pt-[100px] sm:pt-[120px] pb-12 sm:pb-16">
-      <BackgroundImage />
-      
-      {/* Content Container */}
-      <div className="container mx-auto px-4 relative z-10">
-        <div className="flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-16">
+    <section id="hero" ref={sectionRef} className="relative min-h-[85vh] flex items-center pt-12 pb-8 md:pt-24 md:pb-0">
+      {/* Background Image */}
+      <div className="absolute inset-0">
+        <Image
+          src="/images/hero-bg.jpg"
+          alt="Hero Background"
+          fill
+          className="object-cover brightness-[0.3]"
+          priority
+          quality={90}
+          sizes="100vw"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/30 to-black" />
+      </div>
+
+      {/* Content */}
+      <div className="container relative z-10 mx-auto px-4">
+        <div className="grid lg:grid-cols-2 gap-8 items-center">
           {/* Left Content */}
-          <div className="w-full lg:w-1/2 flex flex-col -mt-2">
-            {/* Welcome Text */}
-            <motion.div
+          <div className="space-y-6">
+            <motion.div 
+              className="inline-block"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, ease: "easeOut" }}
-              className="mb-3 sm:mb-4"
+              transition={{ duration: 0.3 }}
             >
-              <div className="inline-block relative">
-                <div className="relative border border-gold/30 rounded-full px-5 sm:px-7 py-2.5 sm:py-3 backdrop-blur-xl bg-black/40 shadow-[0_0_40px_rgba(255,184,0,0.2)]">
-                  <div className="text-gold font-semibold text-xs sm:text-sm md:text-base tracking-[0.2em] bg-gradient-to-r from-gold via-amber-500 to-gold bg-clip-text text-transparent">
-                    PREMIUM CONSULTANCY SERVICES
-                  </div>
-                </div>
+              <div className="bg-[#FFB800]/10 backdrop-blur-sm border border-[#FFB800]/20 rounded-full px-3 py-0.5">
+                <span className="text-[#FFB800] font-medium tracking-wide uppercase text-sm">
+                  PREMIUM CONSULTANCY SERVICES
+                </span>
               </div>
             </motion.div>
 
-            {/* Main Heading */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.2, ease: "easeOut" }}
-              className="text-3xl xs:text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.1] tracking-tight mb-4 sm:mb-5"
-            >
-              <div className="flex flex-col gap-y-2">
-                <div className="flex items-center">
-                  <div className="text-white/95">
-                    <span className="relative">
-                      Your Gateway To
-                      <motion.span
-                        initial={{ width: "0%" }}
-                        animate={{ width: "100%" }}
-                        transition={{ duration: 1.5, delay: 1 }}
-                        className="absolute -bottom-1 left-0 h-px w-full bg-gradient-to-r from-transparent via-gold/50 to-transparent"
-                      />
-                    </span>
-                  </div>
-                </div>
-                <div className="flex items-center">
-                  <div className="text-white/95">
-                    <span className="relative">
-                      Success
-                    </span>
-                  </div>
-                  <div className="relative ml-2 whitespace-nowrap">
-                    <span className="bg-gradient-to-r from-gold via-amber-500 to-gold bg-clip-text text-transparent">
-                      in Morocco
-                    </span>
-                  </div>
-                  <motion.span
-                    initial={{ width: "0%" }}
-                    animate={{ width: "100%" }}
-                    transition={{ duration: 1.5, delay: 1.2 }}
-                    className="absolute -bottom-1 left-0 h-px w-full bg-gradient-to-r from-transparent via-gold/50 to-transparent"
-                  />
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Description */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.4, ease: "easeOut" }}
-              className="relative text-base sm:text-lg md:text-xl text-zinc-300 mb-6 sm:mb-8 max-w-xl leading-relaxed"
-            >
-              <div>
-                Experience excellence with Morocco&apos;s premier consultancy firm. We transform complex processes into seamless journeys, offering expert guidance in business formation, immigration services, and legal documentation. Your success is our signature.
-              </div>
-            </motion.div>
-
-            {/* Desktop Buttons */}
-            <div className="hidden lg:flex gap-4 w-full max-w-xl">
-              <Link href={{ pathname: "/appointment" }} className="flex-1">
-                <motion.button
+            <div className="space-y-4">
+              <h1 className="text-4xl lg:text-5xl xl:text-6xl 2xl:text-7xl font-bold">
+                <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.7, delay: 0.6 }}
-                  className="w-full px-8 py-4 bg-gradient-to-r from-gold via-amber-500 to-gold rounded-xl text-black font-medium hover:shadow-lg hover:shadow-gold/20 transition-all duration-300 text-base"
+                  transition={{ duration: 0.5 }}
+                  className="relative"
+                >
+                  <span className="bg-gradient-to-r from-white via-zinc-400 to-white bg-clip-text text-transparent">Your Gateway To</span>
+                  <div className="absolute -inset-1 bg-gradient-to-r from-white/10 via-transparent to-white/10 blur-xl opacity-50" />
+                </motion.div>
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.1 }}
+                  className="mt-2"
+                >
+                  <span className="bg-gradient-to-r from-white via-zinc-400 to-white bg-clip-text text-transparent">Success in </span>
+                  <span className="relative">
+                    <span className="relative z-10 bg-gradient-to-r from-[#FFB800] via-amber-500 to-[#FFB800] bg-clip-text text-transparent animate-gradient-x">Morocco</span>
+                    <div className="absolute -inset-1 bg-gradient-to-r from-[#FFB800]/50 via-amber-500/50 to-[#FFB800]/50 blur-2xl opacity-50" />
+                  </span>
+                </motion.div>
+              </h1>
+              
+              <p className="text-white/80 text-xl max-w-2xl leading-relaxed">
+                Experience excellence with Morocco's premier consultancy firm. We transform complex processes into seamless journeys, offering expert guidance in business formation, immigration services, and legal documentation. Your success is our signature.
+              </p>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Link href={{ pathname: "/appointment" as Route }} className="w-full sm:w-auto">
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  className="w-full sm:w-auto px-8 py-4 bg-[#FFB800] text-black rounded-lg font-semibold flex items-center justify-center gap-2 hover:bg-[#FFB800]/90 transition-colors"
                 >
                   Get Started
-                  <ArrowRight className="inline-block ml-2 w-5 h-5" />
+                  <ArrowRight className="w-5 h-5" />
                 </motion.button>
               </Link>
-              <Link href={{ pathname: "/contact" }} className="flex-1">
-                <motion.button
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.7, delay: 0.7 }}
-                  className="w-full px-8 py-4 bg-black/50 backdrop-blur-xl border border-gold/30 rounded-xl text-white font-medium hover:bg-black/70 hover:border-gold/50 transition-all duration-300 text-base"
+              
+              <button
+                onClick={handleContactClick}
+                className="w-full sm:w-auto"
+                type="button"
+                aria-label="Contact Support"
+              >
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="w-full sm:w-auto px-8 py-4 bg-black/50 backdrop-blur-sm border border-[#FFB800]/30 text-white rounded-lg font-semibold flex items-center justify-center gap-2 hover:bg-black/70 hover:border-[#FFB800]/50 transition-all"
                 >
                   Contact Support
-                  <MessageSquare className="inline-block ml-2 w-5 h-5" />
-                </motion.button>
-              </Link>
+                  <MessageSquare className="w-5 h-5" />
+                </motion.div>
+              </button>
             </div>
           </div>
 
-          {/* Right Content - Separate Mobile and Desktop */}
-          <MobileContent />
-          <DesktopContent />
+          {/* Right Content - Logo Circle */}
+          <div className="relative">
+            <div className="relative w-[280px] md:w-[360px] h-[280px] md:h-[360px] mx-auto">
+              <div className="absolute inset-0 rounded-full border-2 border-[#FFB800]/30">
+                <div className="absolute inset-0 rounded-full">
+                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,184,0,0.15),transparent_70%)] animate-pulse" />
+                </div>
+              </div>
+              
+              <div className="absolute inset-[3px] rounded-full overflow-hidden bg-black/50 backdrop-blur-sm">
+                <Image 
+                  src="/images/logo-circle.png"
+                  alt="Agence Achraf Services"
+                  fill
+                  className="object-cover"
+                  priority
+                  quality={100}
+                  sizes="(max-width: 768px) 280px, 360px"
+                />
+              </div>
+
+              {/* Stats Cards */}
+              <motion.div
+                variants={floatingAnimation}
+                initial="initial"
+                animate="animate"
+                className="absolute -top-4 -right-4 bg-black/80 backdrop-blur-sm rounded-xl p-3 border border-[#FFB800]/20 flex items-center gap-3 scale-90 md:scale-100"
+              >
+                <div className="w-10 h-10 bg-[#FFB800] rounded-lg flex items-center justify-center">
+                  <Clock className="w-5 h-5 text-black" />
+                </div>
+                <div>
+                  <div className="text-white font-medium">9AM - 5PM</div>
+                  <div className="text-white/60 text-sm">Working Hours</div>
+                </div>
+              </motion.div>
+
+              <motion.div
+                variants={floatingAnimationReverse}
+                initial="initial"
+                animate="animate"
+                className="absolute -bottom-4 -left-4 bg-black/80 backdrop-blur-sm rounded-xl p-3 border border-[#FFB800]/20 flex items-center gap-3 scale-90 md:scale-100"
+              >
+                <div className="w-10 h-10 bg-[#FFB800] rounded-lg flex items-center justify-center">
+                  <BarChart2 className="w-5 h-5 text-black" />
+                </div>
+                <div>
+                  <div className="text-white font-medium">15+ Services</div>
+                  <div className="text-white/60 text-sm">Professional Solutions</div>
+                </div>
+              </motion.div>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
+    </section>
   )
 }
 

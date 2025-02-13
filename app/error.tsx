@@ -20,6 +20,7 @@ export default function Error({
       errorCode="500"
       message="Internal Server Error"
       description="Oops! Something went wrong on our end. Please try again later or contact our support team if the problem persists."
+      onRetry={reset}
     />
   )
 } 

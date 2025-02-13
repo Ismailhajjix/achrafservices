@@ -2,15 +2,32 @@
 
 import Link from "next/link"
 import { cn } from "@/lib/utils"
-import type { Route } from "next"
+import { MessageSquare } from "lucide-react"
 
 interface ErrorPageProps {
   errorCode: string
   message: string
   description?: string
+  onRetry?: () => void
 }
 
-export function ErrorPage({ errorCode, message, description }: ErrorPageProps) {
+export function ErrorPage({ errorCode, message, description, onRetry }: ErrorPageProps) {
+  const handleContactClick = () => {
+    const contactSection = document.getElementById('contact-form')
+    if (contactSection) {
+      // Calculate header offset (accounting for navigation height)
+      const headerOffset = 80
+      const elementPosition = contactSection.getBoundingClientRect().top
+      const offsetPosition = elementPosition + window.pageYOffset - headerOffset
+
+      // Smooth scroll to the contact section
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: "smooth"
+      })
+    }
+  }
+
   return (
     <div className="relative flex min-h-[100dvh] w-full flex-col items-center justify-center overflow-hidden bg-black px-4 py-6">
       {/* Background Effects */}
@@ -48,16 +65,27 @@ export function ErrorPage({ errorCode, message, description }: ErrorPageProps) {
           >
             Back home
           </Link>
-          <Link
-            href={{ pathname: "/contact" }}
-            className={cn(
-              "inline-flex w-full items-center justify-center rounded-full px-6 py-2.5 text-sm font-medium text-white",
-              "border border-gold/20 transition-all duration-300 hover:bg-white/5",
-              "sm:w-auto sm:px-8 sm:py-3 sm:text-base"
-            )}
+          {onRetry && (
+            <button
+              onClick={onRetry}
+              className={cn(
+                "inline-flex w-full items-center justify-center rounded-full px-6 py-2.5 text-sm font-medium",
+                "bg-white/10 backdrop-blur-sm border border-white/20 text-white",
+                "shadow-[0_0_30px_rgba(255,255,255,0.1)] transition-all duration-300",
+                "hover:scale-[1.02] hover:shadow-[0_0_40px_rgba(255,255,255,0.2)] hover:bg-white/20",
+                "sm:w-auto sm:px-8 sm:py-3 sm:text-base"
+              )}
+            >
+              Try again
+            </button>
+          )}
+          <button
+            onClick={handleContactClick}
+            className="mt-4 px-6 py-3 bg-black/50 backdrop-blur-sm border border-[#FFB800]/30 text-white rounded-lg font-semibold flex items-center justify-center gap-2 hover:bg-black/70 hover:border-[#FFB800]/50 transition-all"
           >
             Contact Support
-          </Link>
+            <MessageSquare className="w-5 h-5" />
+          </button>
         </div>
       </div>
 

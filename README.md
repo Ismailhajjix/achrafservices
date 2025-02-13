@@ -1,17 +1,19 @@
 # Agence Achraf Services
 
-A modern, high-performance website for immigration and visa services built with Next.js 14.
+A modern, high-performance website for Agence Achraf Services, specializing in immigration and business services in Morocco. Built with Next.js 15.
 
 ## Features
 
-- ⚡️ Next.js 14 with App Router
-- 🎨 Tailwind CSS for styling
+- ⚡️ Next.js 15 with App Router
+- 🎨 TailwindCSS with custom design system
 - 🔥 TypeScript for type safety
 - 📱 Responsive design
-- 🎭 Jest & React Testing Library for testing
+- 🌙 Dark mode support
 - 🔍 SEO optimized
 - 📊 Performance optimized
 - 🔒 Security focused
+- 🌐 Internationalization ready
+- 🎨 Modern UI with animations
 
 ## Getting Started
 
@@ -24,57 +26,45 @@ A modern, high-performance website for immigration and visa services built with 
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/achraf.git
-cd achraf
+git clone https://github.com/Ismailhajjix/achrafservices.git
+cd agence-achraf-services
 ```
 
 2. Install dependencies:
 ```bash
 npm install
-# or
-yarn install
 ```
 
-3. Create a `.env.local` file:
+3. Create a `.env.local` file and add required environment variables:
 ```bash
-cp .env.local.example .env.local
+cp .env.example .env.local
 ```
 
 4. Start the development server:
 ```bash
 npm run dev
-# or
-yarn dev
 ```
 
-## Testing
+The site will be available at `http://localhost:3000`
 
-### Running Tests
+## Development
+
 ```bash
-# Run all tests
-npm run test
+# Start development server
+npm run dev
 
-# Run tests with coverage
-npm run test:coverage
+# Build for production
+npm run build
 
-# Run tests in watch mode
-npm run test:watch
+# Start production server
+npm run start
+
+# Lint code
+npm run lint
+
+# Format code
+npm run format
 ```
-
-### Coverage Goals
-- Statements: 80%
-- Branches: 80%
-- Functions: 80%
-- Lines: 80%
-
-## Deployment
-
-The project is optimized for deployment on Vercel. To deploy:
-
-1. Push your code to GitHub
-2. Import your repository in Vercel
-3. Configure environment variables
-4. Deploy!
 
 ## Environment Variables
 
@@ -82,44 +72,38 @@ Required environment variables:
 
 ```env
 NEXT_PUBLIC_SITE_URL=https://achrafservices.ma
-NEXT_PUBLIC_GA_ID=your-ga-id
 ```
 
 ## Project Structure
 
 ```
-├── app/                  # Next.js app directory
-├── components/          # React components
-│   ├── ui/             # UI components
-│   ├── sections/       # Page sections
-│   └── header/         # Header components
-├── hooks/              # Custom React hooks
-├── lib/               # Utility functions
+├── app/                # Next.js app directory (pages & layouts)
+├── components/         # React components
+│   ├── ui/            # Reusable UI components
+│   ├── sections/      # Page sections
+│   └── layout/        # Layout components
+├── lib/               # Utility functions and constants
 ├── public/            # Static assets
-└── styles/           # Global styles
+└── styles/            # Global styles and Tailwind config
 ```
 
-## Performance Optimizations
+## Performance Features
 
-- Image optimization with next/image
-- Font optimization
+- Optimized image loading with next/image
+- Font optimization with next/font
 - Component lazy loading
 - Static page generation
-- API route caching
-- CDN caching headers
-
-## Contributing
-
-1. Fork the repository
-2. Create your feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a Pull Request
+- Responsive images
+- Code splitting
+- Progressive enhancement
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is proprietary software. All rights reserved.
 
 ## Support
 
-For support, email support@achrafservices.ma or open an issue. 
+For support, contact:
+- Email: contact@achrafservices.ma
+- Phone: 05 32 32 33 58
+- Mobile: 06 64 69 05 55 

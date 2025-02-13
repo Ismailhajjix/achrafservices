@@ -1,6 +1,6 @@
 "use client"
 
-import { MessageSquare, FileText, Scale, Users, AlertTriangle, Settings, Phone } from "lucide-react"
+import { MessageSquare, FileText, Scale, Users, AlertTriangle, Phone } from "lucide-react"
 import { PolicyPage } from "@/components/layouts/policy-page"
 
 export default function ContactPolicy() {

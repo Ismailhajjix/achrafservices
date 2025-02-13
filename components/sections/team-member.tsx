@@ -3,7 +3,7 @@
 import Image from "next/image"
 import Link from "next/link"
 import { motion } from "framer-motion"
-import { Facebook, Twitter, Instagram, Share2, Linkedin } from "lucide-react"
+import { Twitter, Share2, Linkedin } from "lucide-react"
 
 const teamMembers = [
   {

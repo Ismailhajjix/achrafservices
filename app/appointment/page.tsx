@@ -4,12 +4,53 @@ import { useState, useEffect } from 'react'
 import { motion } from "framer-motion"
 import { Calendar } from "@/components/ui/calendar"
 import { cn } from "@/lib/utils"
-import { CalendarIcon, Clock, Shield, MessageSquare } from "lucide-react"
-import { format } from "date-fns"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { toast } from "@/components/ui/use-toast"
+import Image from "next/image"
 
+// Types for form data
+interface PersonalInfo {
+  fullName: string
+  email: string
+  phone: string
+  nationality: string
+  currentResidence: string
+  preferredLanguage: string
+  occupation: string
+}
+
+interface ServiceDetails {
+  serviceType: string
+  specificService: string
+  urgencyLevel: string
+  preferredContactMethod: string
+}
+
+interface DocumentInfo {
+  hasPassport: boolean
+  passportExpiry?: string
+  hasResidencePermit: boolean
+  permitExpiry?: string
+  additionalDocuments: string[]
+}
+
+interface AppointmentPreference {
+  date: Date | undefined
+  time: string
+  notes: string
+  agreeToTerms: boolean
+}
+
+interface FormData {
+  step: number
+  personalInfo: PersonalInfo
+  serviceDetails: ServiceDetails
+  documentInfo: DocumentInfo
+  appointmentPreference: AppointmentPreference
+}
+
+// Constants
 const SERVICES = [
   // Business Services
   {
@@ -18,10 +59,22 @@ const SERVICES = [
       {
         name: 'Company Formation',
         description: 'Full company registration process, documentation handling, tax & administrative registrations.',
+        requiredDocs: [
+          'Valid ID/Passport',
+          'Proof of Address',
+          'Business Plan',
+          'Initial Capital Proof'
+        ]
       },
       {
         name: 'Cooperative Formation',
         description: 'Expert cooperative setup services including name approval, registration, and member management.',
+        requiredDocs: [
+          'Members IDs',
+          'Meeting Minutes',
+          'Cooperative Charter',
+          'Member Contributions Proof'
+        ]
       },
       {
         name: 'Association Formation',
@@ -60,6 +113,12 @@ const SERVICES = [
       {
         name: 'Visa Applications',
         description: 'Comprehensive visa application support and processing assistance.',
+        requiredDocs: [
+          'Valid Passport',
+          'Photos',
+          'Bank Statements',
+          'Employment Contract'
+        ]
       },
       {
         name: 'Work Permits',
@@ -102,97 +161,169 @@ const TIME_SLOTS = [
   "14:00", "14:30", "15:00", "15:30", "16:00", "16:30"
 ]
 
-// Extract form interfaces
-interface FormData {
-  fullName: string
-  email: string
-  phone: string
-  notes: string
-}
+const LANGUAGES = [
+  "English",
+  "Arabic",
+  "French",
+  "Spanish"
+]
 
-// Extract service interfaces
-interface ServiceItem {
-  name: string
-  description: string
-}
+const URGENCY_LEVELS = [
+  "Standard",
+  "Priority",
+  "Urgent"
+]
 
-interface ServiceCategory {
-  category: string
-  items: ServiceItem[]
-}
+const CONTACT_METHODS = [
+  "Email",
+  "Phone",
+  "WhatsApp",
+  "In-Person"
+]
 
 export default function AppointmentPage() {
-  const [selectedService, setSelectedService] = useState<string>("")
-  const [date, setDate] = useState<Date | undefined>()
-  const [time, setTime] = useState<string>("")
-  const [isClient, setIsClient] = useState<boolean>(false)
   const [formData, setFormData] = useState<FormData>({
-    fullName: "",
-    email: "",
-    phone: "",
-    notes: ""
+    step: 1,
+    personalInfo: {
+      fullName: "",
+      email: "",
+      phone: "",
+      nationality: "",
+      currentResidence: "",
+      preferredLanguage: "",
+      occupation: ""
+    },
+    serviceDetails: {
+      serviceType: "",
+      specificService: "",
+      urgencyLevel: "",
+      preferredContactMethod: ""
+    },
+    documentInfo: {
+      hasPassport: false,
+      hasResidencePermit: false,
+      additionalDocuments: []
+    },
+    appointmentPreference: {
+      date: undefined,
+      time: "",
+      notes: "",
+      agreeToTerms: false
+    }
   })
+  const [isClient, setIsClient] = useState(false)
 
   useEffect(() => {
     setIsClient(true)
   }, [])
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }))
+  const handleNext = () => {
+    if (validateCurrentStep()) {
+      setFormData(prev => ({ ...prev, step: prev.step + 1 }))
+    }
   }
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    
-    if (!date || !time || !selectedService) {
-      toast({
-        title: "Missing Information",
-        description: "Please fill in all required fields.",
-        variant: "destructive"
-      })
-      return
+  const handlePrevious = () => {
+    setFormData(prev => ({ ...prev, step: prev.step - 1 }))
+  }
+
+  const validateCurrentStep = () => {
+    switch (formData.step) {
+      case 1:
+        if (!formData.personalInfo.fullName || !formData.personalInfo.email || !formData.personalInfo.phone) {
+          toast({
+            title: "Required Fields Missing",
+            description: "Please fill in all required personal information.",
+            variant: "destructive"
+          })
+          return false
+        }
+        break
+      case 2:
+        if (!formData.serviceDetails.serviceType || !formData.serviceDetails.specificService) {
+          toast({
+            title: "Service Selection Required",
+            description: "Please select your desired service.",
+            variant: "destructive"
+          })
+          return false
+        }
+        break
+      case 3:
+        // Document validation can be flexible
+        break
+      case 4:
+        if (!formData.appointmentPreference.date || !formData.appointmentPreference.time) {
+          toast({
+            title: "Appointment Time Required",
+            description: "Please select your preferred date and time.",
+            variant: "destructive"
+          })
+          return false
+        }
+        if (!formData.appointmentPreference.agreeToTerms) {
+          toast({
+            title: "Terms Agreement Required",
+            description: "Please agree to the terms and conditions.",
+            variant: "destructive"
+          })
+          return false
+        }
+        break
     }
+    return true
+  }
+
+  const handleSubmit = async () => {
+    if (!validateCurrentStep()) return
 
     try {
       // TODO: Implement your form submission logic here
-      console.log('Appointment Details:', {
-        service: selectedService,
-        date: format(date, 'PP'),
-        time,
-        ...formData
-      })
+      console.log('Appointment Details:', formData)
 
       toast({
-        title: "Appointment Scheduled",
-        description: "We will contact you shortly to confirm your appointment.",
+        title: "Appointment Request Submitted",
+        description: "We will review your information and contact you shortly.",
       })
 
       // Reset form
-      setSelectedService("")
-      setDate(undefined)
-      setTime("")
       setFormData({
-        fullName: "",
-        email: "",
-        phone: "",
-        notes: ""
+        step: 1,
+        personalInfo: {
+          fullName: "",
+          email: "",
+          phone: "",
+          nationality: "",
+          currentResidence: "",
+          preferredLanguage: "",
+          occupation: ""
+        },
+        serviceDetails: {
+          serviceType: "",
+          specificService: "",
+          urgencyLevel: "",
+          preferredContactMethod: ""
+        },
+        documentInfo: {
+          hasPassport: false,
+          hasResidencePermit: false,
+          additionalDocuments: []
+        },
+        appointmentPreference: {
+          date: undefined,
+          time: "",
+          notes: "",
+          agreeToTerms: false
+        }
       })
     } catch (error) {
       toast({
         title: "Error",
-        description: "Something went wrong. Please try again.",
+        description: error instanceof Error ? error.message : "Something went wrong. Please try again.",
         variant: "destructive"
       })
     }
   }
-
-  const selectedServiceData = SERVICES
-    .flatMap(category => category.items)
-    .find(service => service.name === selectedService)
 
   // Return a simpler loading state during SSR
   if (!isClient) {
@@ -210,223 +341,515 @@ export default function AppointmentPage() {
     )
   }
 
-  return (
-    <div className="relative min-h-screen">
-      {/* Background Effects */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.12),transparent_70%)]" />
-      <div className="absolute inset-0 bg-gradient-to-b from-black via-black/95 to-black" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,215,0,0.08),transparent_70%)]" />
-      
-      {/* Content */}
-      <div className="relative container mx-auto px-6 py-12">
-        <div className="max-w-4xl mx-auto space-y-8">
-          {/* Header Section */}
+  const renderStepContent = () => {
+    switch (formData.step) {
+      case 1:
+        return (
           <div className="space-y-6">
-            {/* Badge */}
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gold/10 border border-gold/20"
-            >
-              <CalendarIcon className="w-5 h-5 text-gold" />
-              <span className="text-sm font-semibold text-white">Schedule Appointment</span>
-            </motion.div>
-            
-            {/* Title Section */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              className="space-y-4"
-            >
-              <h1 className="text-4xl sm:text-5xl font-bold tracking-tight bg-gradient-to-r from-white via-gold to-white bg-clip-text text-transparent">
-                Book Your Consultation
-              </h1>
-
-              <p className="text-lg text-white/70 max-w-2xl">
-                Schedule a personalized consultation with our expert team. We'll guide you through every step of your journey.
-              </p>
-
-              {/* Availability Notice */}
-              <div className="flex items-center gap-2 text-white/70">
-                <Clock className="w-5 h-5" />
-                <span className="text-base">Available Monday - Friday, 9:00 AM - 5:00 PM</span>
+            <h2 className="text-2xl font-bold text-white">Personal Information</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <label className="text-white/80">Full Name *</label>
+                <Input
+                  placeholder="Enter your full name"
+                  value={formData.personalInfo.fullName}
+                  onChange={(e) => setFormData(prev => ({
+                    ...prev,
+                    personalInfo: { ...prev.personalInfo, fullName: e.target.value }
+                  }))}
+                  className="bg-white/5 border-white/10 text-white"
+                />
               </div>
-            </motion.div>
-          </div>
-
-          {/* Form Section */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="p-6 sm:p-8 rounded-xl bg-white/5 border border-gold/20 backdrop-blur-sm"
-          >
-            <div className="flex items-center gap-3 mb-8">
-              <div className="p-2 rounded-lg bg-gold/10">
-                <Shield className="w-6 h-6 text-gold" />
+              <div className="space-y-2">
+                <label className="text-white/80">Email *</label>
+                <Input
+                  type="email"
+                  placeholder="Enter your email"
+                  value={formData.personalInfo.email}
+                  onChange={(e) => setFormData(prev => ({
+                    ...prev,
+                    personalInfo: { ...prev.personalInfo, email: e.target.value }
+                  }))}
+                  className="bg-white/5 border-white/10 text-white"
+                />
               </div>
-              <h2 className="text-2xl font-semibold bg-gradient-to-r from-white via-gold to-white bg-clip-text text-transparent">
-                Appointment Details
-              </h2>
-            </div>
-
-            <form onSubmit={handleSubmit} className="space-y-8">
-              {/* Service Selection */}
-              <div className="space-y-4">
-                <label htmlFor="service" className="block text-gold text-sm font-medium">
-                  Select Service
-                </label>
+              <div className="space-y-2">
+                <label className="text-white/80">Phone Number *</label>
+                <Input
+                  placeholder="Enter your phone number"
+                  value={formData.personalInfo.phone}
+                  onChange={(e) => setFormData(prev => ({
+                    ...prev,
+                    personalInfo: { ...prev.personalInfo, phone: e.target.value }
+                  }))}
+                  className="bg-white/5 border-white/10 text-white"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-white/80">Nationality</label>
+                <Input
+                  placeholder="Enter your nationality"
+                  value={formData.personalInfo.nationality}
+                  onChange={(e) => setFormData(prev => ({
+                    ...prev,
+                    personalInfo: { ...prev.personalInfo, nationality: e.target.value }
+                  }))}
+                  className="bg-white/5 border-white/10 text-white"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-white/80">Current Residence</label>
+                <Input
+                  placeholder="Enter your current residence"
+                  value={formData.personalInfo.currentResidence}
+                  onChange={(e) => setFormData(prev => ({
+                    ...prev,
+                    personalInfo: { ...prev.personalInfo, currentResidence: e.target.value }
+                  }))}
+                  className="bg-white/5 border-white/10 text-white"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-white/80">Preferred Language</label>
                 <select
-                  id="service"
-                  value={selectedService}
-                  onChange={(e) => setSelectedService(e.target.value)}
-                  className="w-full bg-black/50 text-white border border-gold/20 rounded-lg p-4 focus:border-gold focus:ring-2 focus:ring-gold/20 outline-none hover:border-gold/40 transition-all duration-300"
-                  required
+                  value={formData.personalInfo.preferredLanguage}
+                  onChange={(e) => setFormData(prev => ({
+                    ...prev,
+                    personalInfo: { ...prev.personalInfo, preferredLanguage: e.target.value }
+                  }))}
+                  className="w-full px-3 py-2 bg-black/80 border border-white/10 rounded-md text-white [&>option]:bg-black [&>option]:text-white hover:border-gold/20 focus:border-gold/20 focus:ring-1 focus:ring-gold/20 transition-colors"
                 >
-                  <option value="">-- Select a Service --</option>
-                  {SERVICES.map((category) => (
-                    <optgroup key={category.category} label={category.category}>
-                      {category.items.map((service) => (
-                        <option key={service.name} value={service.name}>
+                  <option value="" className="bg-black text-white">Select language</option>
+                  {LANGUAGES.map(lang => (
+                    <option key={lang} value={lang} className="bg-black text-white">{lang}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          </div>
+        )
+      
+      case 2:
+        return (
+          <div className="space-y-6">
+            <h2 className="text-2xl font-bold text-white">Service Selection</h2>
+            <div className="grid grid-cols-1 gap-6">
+              <div className="space-y-2">
+                <label className="text-white/80">Service Category *</label>
+                <select
+                  value={formData.serviceDetails.serviceType}
+                  onChange={(e) => setFormData(prev => ({
+                    ...prev,
+                    serviceDetails: { ...prev.serviceDetails, serviceType: e.target.value }
+                  }))}
+                  className="w-full px-3 py-2 bg-black/80 border border-white/10 rounded-md text-white [&>option]:bg-black [&>option]:text-white hover:border-gold/20 focus:border-gold/20 focus:ring-1 focus:ring-gold/20 transition-colors"
+                >
+                  <option value="" className="bg-black text-white">Select category</option>
+                  {SERVICES.map(category => (
+                    <option key={category.category} value={category.category} className="bg-black text-white">
+                      {category.category}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              
+              {formData.serviceDetails.serviceType && (
+                <div className="space-y-2">
+                  <label className="text-white/80">Specific Service *</label>
+                  <select
+                    value={formData.serviceDetails.specificService}
+                    onChange={(e) => setFormData(prev => ({
+                      ...prev,
+                      serviceDetails: { ...prev.serviceDetails, specificService: e.target.value }
+                    }))}
+                    className="w-full px-3 py-2 bg-black/80 border border-white/10 rounded-md text-white [&>option]:bg-black [&>option]:text-white hover:border-gold/20 focus:border-gold/20 focus:ring-1 focus:ring-gold/20 transition-colors"
+                  >
+                    <option value="" className="bg-black text-white">Select service</option>
+                    {SERVICES
+                      .find(cat => cat.category === formData.serviceDetails.serviceType)
+                      ?.items.map(service => (
+                        <option key={service.name} value={service.name} className="bg-black text-white">
                           {service.name}
                         </option>
                       ))}
-                    </optgroup>
+                  </select>
+                </div>
+              )}
+              
+              <div className="space-y-2">
+                <label className="text-white/80">Urgency Level</label>
+                <select
+                  value={formData.serviceDetails.urgencyLevel}
+                  onChange={(e) => setFormData(prev => ({
+                    ...prev,
+                    serviceDetails: { ...prev.serviceDetails, urgencyLevel: e.target.value }
+                  }))}
+                  className="w-full px-3 py-2 bg-black/80 border border-white/10 rounded-md text-white [&>option]:bg-black [&>option]:text-white hover:border-gold/20 focus:border-gold/20 focus:ring-1 focus:ring-gold/20 transition-colors"
+                >
+                  <option value="" className="bg-black text-white">Select urgency</option>
+                  {URGENCY_LEVELS.map(level => (
+                    <option key={level} value={level} className="bg-black text-white">{level}</option>
                   ))}
                 </select>
-                {selectedServiceData && (
-                  <div className="p-4 bg-gold/5 border border-gold/10 rounded-lg">
-                    <p className="text-zinc-400">{selectedServiceData.description}</p>
+              </div>
+              
+              <div className="space-y-2">
+                <label className="text-white/80">Preferred Contact Method</label>
+                <select
+                  value={formData.serviceDetails.preferredContactMethod}
+                  onChange={(e) => setFormData(prev => ({
+                    ...prev,
+                    serviceDetails: { ...prev.serviceDetails, preferredContactMethod: e.target.value }
+                  }))}
+                  className="w-full px-3 py-2 bg-black/80 border border-white/10 rounded-md text-white [&>option]:bg-black [&>option]:text-white hover:border-gold/20 focus:border-gold/20 focus:ring-1 focus:ring-gold/20 transition-colors"
+                >
+                  <option value="" className="bg-black text-white">Select contact method</option>
+                  {CONTACT_METHODS.map(method => (
+                    <option key={method} value={method} className="bg-black text-white">{method}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          </div>
+        )
+      
+      case 3:
+        return (
+          <div className="space-y-6">
+            <h2 className="text-2xl font-bold text-white">Document Information</h2>
+            <div className="space-y-6">
+              <div className="space-y-4">
+                <label className="flex items-center space-x-3">
+                  <input
+                    type="checkbox"
+                    checked={formData.documentInfo.hasPassport}
+                    onChange={(e) => setFormData(prev => ({
+                      ...prev,
+                      documentInfo: { ...prev.documentInfo, hasPassport: e.target.checked }
+                    }))}
+                    className="form-checkbox text-gold"
+                  />
+                  <span className="text-white">I have a valid passport</span>
+                </label>
+                
+                {formData.documentInfo.hasPassport && (
+                  <div className="ml-8 space-y-2">
+                    <label className="text-white/80">Passport Expiry Date</label>
+                    <Input
+                      type="date"
+                      value={formData.documentInfo.passportExpiry}
+                      onChange={(e) => setFormData(prev => ({
+                        ...prev,
+                        documentInfo: { ...prev.documentInfo, passportExpiry: e.target.value }
+                      }))}
+                      className="bg-white/5 border-white/10 text-white"
+                    />
                   </div>
                 )}
               </div>
-
-              {/* Date & Time Selection */}
-              <div className="grid sm:grid-cols-2 gap-6">
-                {/* Date Picker */}
-                <div>
-                  <label className="block text-gold text-sm font-medium mb-3">
-                    Preferred Date
-                  </label>
-                  <div className="bg-black/50 rounded-lg p-4 border border-gold/20 hover:border-gold/40 transition-all duration-300">
-                    <Calendar
-                      mode="single"
-                      selected={date}
-                      onSelect={setDate}
-                      className="bg-transparent"
-                      disabled={(date) => date < new Date()}
+              
+              <div className="space-y-4">
+                <label className="flex items-center space-x-3">
+                  <input
+                    type="checkbox"
+                    checked={formData.documentInfo.hasResidencePermit}
+                    onChange={(e) => setFormData(prev => ({
+                      ...prev,
+                      documentInfo: { ...prev.documentInfo, hasResidencePermit: e.target.checked }
+                    }))}
+                    className="form-checkbox text-gold"
+                  />
+                  <span className="text-white">I have a residence permit</span>
+                </label>
+                
+                {formData.documentInfo.hasResidencePermit && (
+                  <div className="ml-8 space-y-2">
+                    <label className="text-white/80">Permit Expiry Date</label>
+                    <Input
+                      type="date"
+                      value={formData.documentInfo.permitExpiry}
+                      onChange={(e) => setFormData(prev => ({
+                        ...prev,
+                        documentInfo: { ...prev.documentInfo, permitExpiry: e.target.value }
+                      }))}
+                      className="bg-white/5 border-white/10 text-white"
                     />
                   </div>
-                </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )
+      
+      case 4:
+        return (
+          <div className="space-y-6">
+            <h2 className="text-2xl font-bold text-white">Appointment Preferences</h2>
+            <div className="space-y-6">
+              <div className="space-y-2">
+                <label className="text-white/80">Preferred Date *</label>
+                <Calendar
+                  mode="single"
+                  selected={formData.appointmentPreference.date}
+                  onSelect={(date) => setFormData(prev => ({
+                    ...prev,
+                    appointmentPreference: { ...prev.appointmentPreference, date }
+                  }))}
+                  className="bg-white/5 border-white/10 text-white rounded-lg p-3"
+                  disabled={(date) => 
+                    date < new Date() || // Past dates
+                    date.getDay() === 0 || // Sunday
+                    date.getDay() === 6    // Saturday
+                  }
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <label className="text-white/80">Preferred Time *</label>
+                <select
+                  value={formData.appointmentPreference.time}
+                  onChange={(e) => setFormData(prev => ({
+                    ...prev,
+                    appointmentPreference: { ...prev.appointmentPreference, time: e.target.value }
+                  }))}
+                  className="w-full px-3 py-2 bg-black/80 border border-white/10 rounded-md text-white [&>option]:bg-black [&>option]:text-white hover:border-gold/20 focus:border-gold/20 focus:ring-1 focus:ring-gold/20 transition-colors"
+                >
+                  <option value="" className="bg-black text-white">Select time</option>
+                  {TIME_SLOTS.map(slot => (
+                    <option key={slot} value={slot} className="bg-black text-white">{slot}</option>
+                  ))}
+                </select>
+              </div>
+              
+              <div className="space-y-2">
+                <label className="text-white/80">Additional Notes</label>
+                <Textarea
+                  placeholder="Any additional information you'd like to share..."
+                  value={formData.appointmentPreference.notes}
+                  onChange={(e) => setFormData(prev => ({
+                    ...prev,
+                    appointmentPreference: { ...prev.appointmentPreference, notes: e.target.value }
+                  }))}
+                  className="bg-white/5 border-white/10 text-white min-h-[100px]"
+                />
+              </div>
+              
+              <div className="space-y-4">
+                <label className="flex items-center space-x-3">
+                  <input
+                    type="checkbox"
+                    checked={formData.appointmentPreference.agreeToTerms}
+                    onChange={(e) => setFormData(prev => ({
+                      ...prev,
+                      appointmentPreference: { ...prev.appointmentPreference, agreeToTerms: e.target.checked }
+                    }))}
+                    className="form-checkbox text-gold"
+                  />
+                  <span className="text-white">I agree to the terms and conditions *</span>
+                </label>
+              </div>
+            </div>
+          </div>
+        )
+      
+      default:
+        return null
+    }
+  }
 
-                {/* Time Slots */}
-                <div>
-                  <label className="block text-gold text-sm font-medium mb-3">
-                    Available Times
-                  </label>
-                  <div className="grid grid-cols-2 gap-3">
-                    {TIME_SLOTS.map((slot) => (
-                      <button
-                        key={slot}
-                        type="button"
-                        onClick={() => setTime(slot)}
-                        className={cn(
-                          "p-4 rounded-lg border text-base font-medium transition-all duration-300",
-                          time === slot
-                            ? "bg-gradient-to-r from-gold/20 via-gold/20 to-gold/20 border-gold text-gold shadow-lg shadow-gold/10"
-                            : "bg-black/50 border-gold/20 text-white hover:border-gold/40 hover:bg-gold/5"
-                        )}
-                      >
-                        {slot}
-                      </button>
-                    ))}
+  return (
+    <div className="relative min-h-screen">
+      {/* Enhanced Background Effects */}
+      <div className="absolute inset-0">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,184,0,0.15),transparent_70%)]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black via-black/95 to-black" />
+        <div className="absolute inset-0 bg-[linear-gradient(45deg,rgba(255,184,0,0.05)_1px,transparent_1px),linear-gradient(-45deg,rgba(255,184,0,0.05)_1px,transparent_1px)] bg-[size:40px_40px]" />
+      </div>
+      
+      {/* Premium Hero Section */}
+      <div className="relative">
+        {/* Background Image */}
+        <div className="absolute inset-0">
+          <Image
+            src="/images/appointment/book.jpg"
+            alt="Book Appointment"
+            fill
+            className="object-cover brightness-[0.3]"
+            priority
+            quality={90}
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/30 to-black" />
+        </div>
+
+        <div className="container relative mx-auto px-4 pt-24 pb-32 text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="inline-block mb-6"
+          >
+            <div className="bg-[#FFB800]/10 backdrop-blur-sm border border-[#FFB800]/20 rounded-full px-4 py-1">
+              <span className="text-[#FFB800] font-medium tracking-wide uppercase text-sm">
+                SCHEDULE A CONSULTATION
+              </span>
+            </div>
+          </motion.div>
+
+          <motion.h1 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6"
+          >
+            <span className="text-white">Book Your </span>
+            <span className="text-[#FFB800]">Premium Consultation</span>
+          </motion.h1>
+
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="text-white/70 text-lg max-w-3xl mx-auto mb-8"
+          >
+            Your journey to success begins with a personalized consultation. Our expert team is ready to guide you through every step of the process, ensuring a seamless experience tailored to your specific needs in Morocco.
+          </motion.p>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="relative container mx-auto px-6 pb-12">
+        <div className="max-w-4xl mx-auto space-y-8">
+          {/* Progress Steps */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="flex justify-between items-center mb-8 relative"
+          >
+            {/* Progress Line */}
+            <div className="absolute top-1/2 left-0 right-0 h-1 -translate-y-1/2">
+              <div className="h-full bg-white/10" />
+              <motion.div
+                className="absolute top-0 left-0 h-full bg-gradient-to-r from-[#FFB800] via-amber-500 to-[#FFB800]"
+                initial={{ width: "0%" }}
+                animate={{ width: `${((formData.step - 1) / 3) * 100}%` }}
+                transition={{ duration: 0.5, ease: "easeInOut" }}
+              />
+            </div>
+
+            {/* Steps */}
+            {[1, 2, 3, 4].map((step) => (
+              <motion.div
+                key={step}
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ 
+                  scale: formData.step >= step ? 1 : 0.9,
+                  opacity: 1 
+                }}
+                transition={{ duration: 0.5, delay: step * 0.1 }}
+                className="relative z-10"
+              >
+                <motion.div
+                  className={cn(
+                    "w-12 h-12 rounded-full flex items-center justify-center relative",
+                    "transition-all duration-500",
+                    formData.step === step
+                      ? "bg-gradient-to-r from-[#FFB800] via-amber-500 to-[#FFB800] shadow-lg shadow-[#FFB800]/20"
+                      : formData.step > step
+                        ? "bg-[#FFB800] shadow-md"
+                        : "bg-white/10"
+                  )}
+                  whileHover={formData.step >= step ? { scale: 1.05 } : {}}
+                  whileTap={formData.step >= step ? { scale: 0.95 } : {}}
+                >
+                  {formData.step > step ? (
+                    <motion.svg
+                      initial={{ opacity: 0, scale: 0.5 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      className="w-6 h-6 text-black"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <motion.path
+                        initial={{ pathLength: 0 }}
+                        animate={{ pathLength: 1 }}
+                        transition={{ duration: 0.5, delay: 0.2 }}
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M5 13l4 4L19 7"
+                      />
+                    </motion.svg>
+                  ) : (
+                    <span className={cn(
+                      "text-lg font-semibold",
+                      formData.step === step ? "text-black" : "text-white/50"
+                    )}>
+                      {step}
+                    </span>
+                  )}
+
+                  {/* Step Label */}
+                  <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 whitespace-nowrap">
+                    <span className={cn(
+                      "text-xs font-medium",
+                      formData.step >= step ? "text-[#FFB800]" : "text-white/50"
+                    )}>
+                      {step === 1 && "Personal Info"}
+                      {step === 2 && "Services"}
+                      {step === 3 && "Documents"}
+                      {step === 4 && "Schedule"}
+                    </span>
                   </div>
-                </div>
-              </div>
 
-              {/* Personal Information */}
-              <div className="grid sm:grid-cols-2 gap-6">
-                <div className="space-y-4">
-                  <label htmlFor="fullName" className="block text-gold text-sm font-medium">
-                    Full Name
-                  </label>
-                  <Input
-                    id="fullName"
-                    name="fullName"
-                    value={formData.fullName}
-                    onChange={handleInputChange}
-                    placeholder="Enter your full name"
-                    className="bg-black/50 border-gold/20 text-white placeholder:text-white/40 focus:border-gold/50 focus:ring-gold/20"
-                    required
-                  />
-                </div>
+                  {/* Animated Ring */}
+                  {formData.step === step && (
+                    <motion.div
+                      className="absolute inset-0 rounded-full border-2 border-[#FFB800]"
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: [0.2, 0.5, 0.2], scale: [1, 1.1, 1] }}
+                      transition={{
+                        duration: 2,
+                        repeat: Infinity,
+                        ease: "easeInOut"
+                      }}
+                    />
+                  )}
+                </motion.div>
+              </motion.div>
+            ))}
+          </motion.div>
 
-                <div className="space-y-4">
-                  <label htmlFor="email" className="block text-gold text-sm font-medium">
-                    Email
-                  </label>
-                  <Input
-                    id="email"
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    placeholder="Enter your email"
-                    className="bg-black/50 border-gold/20 text-white placeholder:text-white/40 focus:border-gold/50 focus:ring-gold/20"
-                    required
-                  />
-                </div>
+          {/* Form Content */}
+          <div className="bg-black/40 backdrop-blur-xl rounded-xl p-6 border border-white/10 hover:border-[#FFB800]/20 transition-all duration-500">
+            {renderStepContent()}
+          </div>
 
-                <div className="space-y-4">
-                  <label htmlFor="phone" className="block text-gold text-sm font-medium">
-                    Phone
-                  </label>
-                  <Input
-                    id="phone"
-                    type="tel"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleInputChange}
-                    placeholder="Enter your phone number"
-                    className="bg-black/50 border-gold/20 text-white placeholder:text-white/40 focus:border-gold/50 focus:ring-gold/20"
-                    required
-                  />
-                </div>
-
-                <div className="space-y-4 sm:col-span-2">
-                  <label htmlFor="notes" className="block text-gold text-sm font-medium">
-                    Additional Notes
-                  </label>
-                  <Textarea
-                    id="notes"
-                    name="notes"
-                    value={formData.notes}
-                    onChange={handleInputChange}
-                    placeholder="Any specific requirements or questions?"
-                    className="bg-black/50 border-gold/20 text-white placeholder:text-white/40 focus:border-gold/50 focus:ring-gold/20 min-h-[100px]"
-                  />
-                </div>
-              </div>
-
-              {/* Submit Button */}
+          {/* Navigation Buttons */}
+          <div className="flex justify-between pt-6">
+            {formData.step > 1 && (
               <motion.button
-                type="submit"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="w-full relative group"
+                onClick={handlePrevious}
+                className="px-6 py-2.5 rounded-lg bg-black/50 backdrop-blur-sm border border-[#FFB800]/30 text-white hover:bg-black/70 hover:border-[#FFB800]/50 transition-all"
               >
-                <div className="absolute -inset-1 bg-gradient-to-r from-gold via-gold to-gold rounded-lg blur opacity-25 group-hover:opacity-50 transition duration-500" />
-                <div className="relative px-8 py-4 bg-gradient-to-r from-gold via-amber-500 to-gold rounded-lg">
-                  <span className="relative text-black font-semibold text-lg">
-                    Schedule Appointment
-                  </span>
-                </div>
+                Previous
               </motion.button>
-            </form>
-          </motion.div>
+            )}
+            
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={formData.step === 4 ? handleSubmit : handleNext}
+              className="px-6 py-2.5 rounded-lg bg-gradient-to-r from-[#FFB800] via-amber-500 to-[#FFB800] text-black font-medium hover:shadow-lg hover:shadow-[#FFB800]/20 transition-all ml-auto"
+            >
+              {formData.step === 4 ? 'Submit' : 'Next'}
+            </motion.button>
+          </div>
         </div>
       </div>
     </div>
-  ) 
+  )
 } 

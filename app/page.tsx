@@ -1,15 +1,17 @@
-import { Suspense } from "react"
-import { HomeContent } from "@/components/home-content"
-import { LoadingWrapper } from "@/components/loading-wrapper"
-import { ErrorBoundary } from "@/components/error-boundary"
+import { Suspense } from 'react'
+import { HomePageWrapper } from "@/components/home-page-wrapper"
 
 export default function Home() {
   return (
-    <ErrorBoundary>
-      <Suspense fallback={<LoadingWrapper>Loading...</LoadingWrapper>}>
-        <HomeContent />
-      </Suspense>
-    </ErrorBoundary>
+    <Suspense 
+      fallback={
+        <div className="min-h-screen bg-black flex items-center justify-center">
+          <div className="w-8 h-8 border-2 border-[#FFB800] rounded-full animate-spin border-t-transparent" />
+        </div>
+      }
+    >
+      <HomePageWrapper />
+    </Suspense>
   )
 }
 

@@ -1,57 +1,39 @@
 "use client"
 
-import { Component } from "react"
-import type { ErrorInfo, ReactNode } from "react"
-import { Button } from "@/components/ui/forms/button"
-import { cn } from "@/lib/utils"
+import { Component } from 'react'
+import type { ReactNode } from 'react'
 
 interface Props {
-  children: ReactNode
-  fallback?: ReactNode
+  children?: ReactNode
 }
 
 interface State {
   hasError: boolean
-  error: Error | null
 }
 
 export class ErrorBoundary extends Component<Props, State> {
   public state: State = {
-    hasError: false,
-    error: null,
+    hasError: false
   }
 
-  public static getDerivedStateFromError(error: Error): State {
-    return { hasError: true, error }
-  }
-
-  public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error("Uncaught error:", error, errorInfo)
+  public static getDerivedStateFromError(): State {
+    return { hasError: true }
   }
 
   public render() {
     if (this.state.hasError) {
       return (
-        this.props.fallback || (
-          <div className="flex min-h-[400px] flex-col items-center justify-center p-4 text-center">
-            <h2 className="mb-4 text-2xl font-bold">Something went wrong</h2>
-            <p className="mb-6 text-muted-foreground">
-              {this.state.error?.message || "An unexpected error occurred"}
-            </p>
-            <Button
-              onClick={() => {
-                this.setState({ hasError: false, error: null })
-                window.location.reload()
-              }}
-              className={cn(
-                "bg-gold text-black",
-                "hover:bg-gold/90"
-              )}
+        <div className="flex min-h-screen items-center justify-center">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold">Something went wrong</h1>
+            <button
+              className="mt-4 rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+              onClick={() => this.setState({ hasError: false })}
             >
               Try again
-            </Button>
+            </button>
           </div>
-        )
+        </div>
       )
     }
 

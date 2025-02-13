@@ -1,85 +1,200 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { Hero } from "@/components/sections/hero"
-import { VIPServices } from "@/components/sections/vip-services"
-import { WorkingProcess } from "@/components/sections/working-process"
-import { AboutCompany } from "@/components/sections/about-company"
-import { ChooseYourDestination } from "@/components/sections/choose-your-destination"
-import { TeamMember } from "@/components/sections/team-member"
-import { ContactForm } from "@/components/sections/contact-form"
-import { Testimonials } from "@/components/sections/testimonials"
-import { motion, AnimatePresence } from "framer-motion"
-import Image from "next/image"
+import dynamic from 'next/dynamic'
+import { Suspense, useState, useEffect, useCallback } from 'react'
+import { useInView } from 'react-intersection-observer'
+import type { FC } from 'react'
+
+const LoadingPlaceholder: FC<{ height: string }> = ({ height }) => (
+  <div className={`${height} bg-black animate-pulse rounded-lg`}>
+    <div className="h-full w-full bg-gradient-to-r from-black via-gray-900 to-black animate-shimmer" />
+  </div>
+)
+LoadingPlaceholder.displayName = 'LoadingPlaceholder'
+
+// Priority loading for above-the-fold content
+const Hero = dynamic(() => import('@/components/sections/hero').then(mod => mod.Hero), {
+  loading: () => <LoadingPlaceholder height="min-h-[85vh]" />,
+  ssr: true // Enable SSR for hero section
+})
+
+// Progressive loading for critical sections with chunking
+const Services = dynamic(() => 
+  import('@/components/sections/services')
+    .then(mod => mod.Services)
+    .catch(() => {
+      function ServicesFallback() {
+        return <div>Failed to load Services</div>
+      }
+      return ServicesFallback
+    }), 
+  {
+    loading: () => <LoadingPlaceholder height="min-h-[100vh]" />,
+    ssr: false
+  }
+)
+
+const WorkingProcess = dynamic(() => 
+  import('@/components/sections/working-process')
+    .then(mod => mod.WorkingProcess)
+    .catch(() => {
+      function WorkingProcessFallback() {
+        return <div>Failed to load Working Process</div>
+      }
+      return WorkingProcessFallback
+    }), 
+  {
+    loading: () => <LoadingPlaceholder height="min-h-[60vh]" />,
+    ssr: false
+  }
+)
+
+const AboutCompany = dynamic(() => 
+  import('@/components/sections/about-company')
+    .then(mod => mod.AboutCompany)
+    .catch(() => {
+      function AboutFallback() {
+        return <div>Failed to load About</div>
+      }
+      return AboutFallback
+    }),
+  {
+    loading: () => <LoadingPlaceholder height="min-h-[60vh]" />,
+    ssr: false
+  }
+)
+
+// Deferred loading for non-critical sections with error handling
+const ChooseYourDestination = dynamic(() => 
+  import('@/components/sections/choose-your-destination')
+    .then(mod => mod.ChooseYourDestination)
+    .catch(() => {
+      function DestinationsFallback() {
+        return <div>Failed to load Destinations</div>
+      }
+      return DestinationsFallback
+    }),
+  {
+    loading: () => <LoadingPlaceholder height="min-h-[100vh]" />,
+    ssr: false
+  }
+)
+
+const Testimonials = dynamic(() => 
+  import('@/components/sections/testimonials')
+    .then(mod => mod.Testimonials)
+    .catch(() => {
+      function TestimonialsFallback() {
+        return <div>Failed to load Testimonials</div>
+      }
+      return TestimonialsFallback
+    }),
+  {
+    loading: () => <LoadingPlaceholder height="min-h-[80vh]" />,
+    ssr: false
+  }
+)
+
+const ContactForm = dynamic(() => 
+  import('@/components/sections/contact-form')
+    .then(mod => mod.ContactForm)
+    .catch(() => {
+      function ContactFormFallback() {
+        return <div>Failed to load Contact Form</div>
+      }
+      return ContactFormFallback
+    }),
+  {
+    loading: () => <LoadingPlaceholder height="min-h-[60vh]" />,
+    ssr: false
+  }
+)
 
 export function HomeContent() {
-  const [isMounted, setIsMounted] = useState(false)
+  const [mounted, setMounted] = useState(false)
+  const { ref: servicesRef, inView: servicesInView } = useInView({ 
+    triggerOnce: true, 
+    threshold: 0.1,
+    rootMargin: '100px' // Start loading 100px before section comes into view
+  })
+  const { ref: laterSectionsRef, inView: laterSectionsInView } = useInView({ 
+    triggerOnce: true, 
+    threshold: 0.1,
+    rootMargin: '200px' // Start loading 200px before section comes into view
+  })
 
-  useEffect(() => {
-    setIsMounted(true)
+  // Memoized preload function
+  const preloadCriticalSections = useCallback(async () => {
+    try {
+      await Promise.all([
+        import('@/components/sections/services'),
+        import('@/components/sections/about-company')
+      ])
+      return { success: true }
+    } catch (error) {
+      console.error('Failed to preload critical sections:', error)
+      return { success: false }
+    }
   }, [])
 
-  if (!isMounted) {
-    return null // Return null on server-side and first client render
-  }
+  useEffect(() => {
+    setMounted(true)
+    
+    // Preload critical sections after hero with retry logic
+    if (mounted) {
+      let retryCount = 0
+      const maxRetries = 3
+      
+      const attemptPreload = async () => {
+        const { success } = await preloadCriticalSections()
+        if (!success && retryCount < maxRetries) {
+          retryCount++
+          setTimeout(attemptPreload, 1000 * retryCount) // Exponential backoff
+        }
+      }
+      
+      attemptPreload()
+    }
+  }, [mounted, preloadCriticalSections])
 
   return (
-    <AnimatePresence>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        className="flex flex-col min-h-screen bg-black selection:bg-gold/30 selection:text-white"
-      >
-        {/* Background Effects */}
-        <div className="fixed inset-0">
-          <div className="absolute inset-0 bg-[linear-gradient(45deg,#4f4f4f2e_1px,transparent_1px)] bg-[length:24px_24px]" />
-          <div className="absolute inset-0 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f2e_1px,transparent_1px)] bg-[size:14px_14px]" />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,184,0,0.08),transparent_70%)]" />
-          <div className="absolute inset-0 bg-gradient-to-b from-black via-black/95 to-black" />
-        </div>
-        
-        {/* Hero Section */}
-        <section className="relative min-h-[calc(100vh-80px)] mb-22">
-          {/* Background Image with Parallax */}
-          <motion.div 
-            initial={{ scale: 1.1 }}
-            animate={{ scale: 1 }}
-            transition={{ duration: 2, ease: "easeOut" }}
-            className="absolute inset-0 z-0"
-          >
-            <Image
-              src="/images/hero-bg.jpg"
-              alt="Hero Background"
-              fill
-              priority
-              quality={100}
-              className="object-cover object-center"
-            />
-          </motion.div>
+    <div className="flex flex-col">
+      {/* Above the fold - Immediate load */}
+      <Hero />
+      
+      {/* Critical sections - Load when approaching viewport */}
+      <div ref={servicesRef}>
+        {mounted && servicesInView && (
+          <>
+            <Suspense fallback={<LoadingPlaceholder height="min-h-[100vh]" />}>
+              <Services />
+            </Suspense>
+            <Suspense fallback={<LoadingPlaceholder height="min-h-[60vh]" />}>
+              <WorkingProcess />
+            </Suspense>
+            <Suspense fallback={<LoadingPlaceholder height="min-h-[60vh]" />}>
+              <AboutCompany />
+            </Suspense>
+          </>
+        )}
+      </div>
 
-          {/* Premium Overlays */}
-          <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/60 to-black z-0" />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,black_100%)] opacity-60 z-10" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent z-20" />
-          
-          {/* Hero Content */}
-          <div className="relative z-30 h-full">
-            <Hero />
-          </div>
-        </section>
-
-        {/* Main Content */}
-        <main className="flex-grow relative z-10">
-          <VIPServices />
-          <WorkingProcess />
-          <AboutCompany />
-          <ChooseYourDestination />
-          <TeamMember />
-          <Testimonials />
-          <ContactForm />
-        </main>
-      </motion.div>
-    </AnimatePresence>
+      {/* Deferred sections - Progressive loading */}
+      <div ref={laterSectionsRef}>
+        {mounted && laterSectionsInView && (
+          <>
+            <Suspense fallback={<LoadingPlaceholder height="min-h-[100vh]" />}>
+              <ChooseYourDestination />
+            </Suspense>
+            <Suspense fallback={<LoadingPlaceholder height="min-h-[80vh]" />}>
+              <Testimonials />
+            </Suspense>
+            <Suspense fallback={<LoadingPlaceholder height="min-h-[60vh]" />}>
+              <ContactForm />
+            </Suspense>
+          </>
+        )}
+      </div>
+    </div>
   )
 } 

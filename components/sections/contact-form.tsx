@@ -4,57 +4,14 @@ import { motion } from "framer-motion"
 import { Button } from "@/components/ui/forms/button"
 import { Input } from "@/components/ui/forms/input"
 import { Textarea } from "@/components/ui/forms/textarea"
-import { MapPin, Mail, Phone, Clock, Send, ArrowRight, MessageSquare, Users, CheckCircle2, ChevronUp } from "lucide-react"
-import { useState, useEffect } from "react"
+import { MapPin, Mail, MessageSquare, Users, Send, Clock, CheckCircle2 } from "lucide-react"
 
 export function ContactForm() {
-  const [showScrollTop, setShowScrollTop] = useState(false)
-  const [isClient, setIsClient] = useState(false)
-
-  useEffect(() => {
-    setIsClient(true)
-    const handleScroll = () => {
-      setShowScrollTop(window.scrollY > 400)
-    }
-    
-    window.addEventListener('scroll', handleScroll)
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
-
-  const scrollToTop = () => {
-    if (isClient) {
-      window.scrollTo({
-        top: 0,
-        behavior: 'smooth'
-      })
-    }
-  }
-
   return (
-    <section id="contact-form" className="relative py-10 xs:py-12 sm:py-16 lg:py-24 overflow-hidden">
-      {/* Premium Background Effects */}
+    <section id="contact-form" className="relative py-16 sm:py-24">
       <div className="absolute inset-0">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.03),transparent_70%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,184,0,0.15),transparent_70%)]" />
         <div className="absolute inset-0 bg-gradient-to-b from-black via-black/95 to-black" />
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 0.1 }}
-          transition={{ duration: 2, repeat: Infinity, repeatType: "reverse" }}
-          className="absolute inset-0 bg-[linear-gradient(45deg,rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(-45deg,rgba(255,184,0,0.02)_1px,transparent_1px)] bg-[size:40px_40px]" 
-        />
-        {/* Animated Gradient Orbs */}
-        <motion.div
-          initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ scale: 1, opacity: 0.5 }}
-          transition={{ duration: 3, repeat: Infinity, repeatType: "reverse" }}
-          className="absolute top-1/4 -left-32 w-64 h-64 bg-gold/20 rounded-full blur-3xl"
-        />
-        <motion.div
-          initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ scale: 1, opacity: 0.5 }}
-          transition={{ duration: 4, repeat: Infinity, repeatType: "reverse", delay: 1 }}
-          className="absolute bottom-1/4 -right-32 w-64 h-64 bg-gold/20 rounded-full blur-3xl"
-        />
       </div>
       
       {/* Main Title Section */}
@@ -163,7 +120,7 @@ export function ContactForm() {
               </div>
 
               {/* Enhanced Contact Form */}
-              <motion.form className="space-y-3 xs:space-y-4 sm:space-y-5">
+              <motion.form role="form" className="space-y-3 xs:space-y-4 sm:space-y-5">
                 {/* Name Input */}
                 <div className="group relative">
                   <Input 
@@ -348,19 +305,6 @@ export function ContactForm() {
           </motion.div>
         </div>
       </div>
-
-      {/* Scroll to Top Button */}
-      {isClient && showScrollTop && (
-        <motion.button
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: 20 }}
-          onClick={scrollToTop}
-          className="fixed bottom-4 xs:bottom-6 right-4 xs:right-6 w-8 h-8 xs:w-10 xs:h-10 sm:w-12 sm:h-12 rounded-full bg-gold/90 hover:bg-gold flex items-center justify-center text-black transition-all duration-300 hover:scale-110 z-50"
-        >
-          <ChevronUp className="w-4 h-4 xs:w-5 xs:h-5 sm:w-6 sm:h-6" />
-        </motion.button>
-      )}
     </section>
   )
 }

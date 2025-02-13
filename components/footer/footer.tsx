@@ -3,7 +3,6 @@
 import Link from "next/link"
 import Image from "next/image"
 import { Phone, Mail, ArrowRight } from "lucide-react"
-import { motion } from "framer-motion"
 import type { Route } from "next"
 
 interface Policy {

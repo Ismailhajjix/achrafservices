@@ -22,6 +22,7 @@ export default function GlobalError({
           errorCode="500"
           message="Critical Error"
           description="A critical error has occurred. Our team has been notified and is working to resolve the issue. Please try again later."
+          onRetry={reset}
         />
       </body>
     </html>
