@@ -8,7 +8,4 @@ export * from './ui'
 export * from './layouts'
 
 // Form Components
-export * from './forms'
-
-// Section Components
-export * from './sections' 
+export * from './forms' 
