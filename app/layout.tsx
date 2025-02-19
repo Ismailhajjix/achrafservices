@@ -1,9 +1,11 @@
 import { Inter } from 'next/font/google'
+import { Noto_Sans_Arabic } from 'next/font/google'
 import './globals.css'
 import { Suspense } from 'react'
-import { ErrorBoundary } from '@/components/error-boundary'
-import { LoadingWrapper } from '@/components/loading-wrapper'
+import { ErrorBoundary } from '@/components/core/error-boundary'
+import { LoadingWrapper } from '@/components/core/loading-wrapper'
 import { ClientLayout } from "@/components/layouts/client-layout"
+import { LanguageProvider } from '@/contexts/language-context'
 import type { Metadata, Viewport } from 'next'
 
 // Optimize font loading
@@ -12,6 +14,15 @@ const inter = Inter({
   display: 'swap',
   preload: true,
   fallback: ['system-ui', 'sans-serif'],
+  adjustFontFallback: true // Prevent layout shift
+})
+
+const notoSansArabic = Noto_Sans_Arabic({ 
+  subsets: ['arabic'],
+  display: 'swap',
+  preload: true,
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-noto-sans-arabic',
   adjustFontFallback: true // Prevent layout shift
 })
 
@@ -45,7 +56,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={inter.className}>
+    <html lang="en" className={`${inter.className} ${notoSansArabic.className}`}>
       <head>
         {/* Resource Hints - Google Fonts Optimization */}
         <link
@@ -73,7 +84,9 @@ export default function RootLayout({
               </LoadingWrapper>
             }
           >
-            <ClientLayout>{children}</ClientLayout>
+            <LanguageProvider>
+              <ClientLayout>{children}</ClientLayout>
+            </LanguageProvider>
           </Suspense>
         </ErrorBoundary>
       </body>

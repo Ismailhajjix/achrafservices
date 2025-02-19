@@ -1,6 +1,6 @@
 "use client"
 
-import { Navigation } from "@/components/layout/navigation"
+import { Navigation } from "@/components/layouts/navigation"
 import { Footer } from "@/components/layouts/footer"
 import { WhatsAppButton } from "@/components/ui/whatsapp-button"
 import { useEffect, useState } from "react"
@@ -19,7 +19,7 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
       <Navigation />
-      <main className="min-h-screen pt-[72px]">
+      <main className="min-h-screen">
         {children}
       </main>
       <Footer />

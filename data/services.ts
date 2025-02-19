@@ -8,17 +8,35 @@ import {
 } from "lucide-react"
 import type { Route } from "next"
 
+type ServiceKey = 
+  | "companyFormation"
+  | "cooperativeFormation"
+  | "associationFormation"
+  | "selfEntrepreneur"
+  | "realEstateRegistry"
+  | "apostilleServices"
+  | "socialSecurity"
+  | "anapecServices"
+  | "commercialLicensing"
+  | "visaApplications"
+  | "residencePermits"
+  | "familyReunification"
+  | "studentVisas"
+  | "legalConsultation"
+
 export interface Service {
   title: string
   href: Route
   icon: LucideIcon
   description: string
   details: string[]
+  key: ServiceKey
 }
 
 // Business Services
 export const businessServices: Service[] = [
   { 
+    key: "companyFormation",
     title: "Company Formation",
     href: "/appointment" as Route,
     icon: Building2,
@@ -32,6 +50,7 @@ export const businessServices: Service[] = [
     ]
   },
   {
+    key: "cooperativeFormation",
     title: "Cooperative Formation",
     href: "/appointment" as Route,
     icon: Building2,
@@ -45,6 +64,7 @@ export const businessServices: Service[] = [
     ]
   },
   {
+    key: "associationFormation",
     title: "Association Formation",
     href: "/appointment" as Route,
     icon: Building2,
@@ -58,6 +78,7 @@ export const businessServices: Service[] = [
     ]
   },
   {
+    key: "selfEntrepreneur",
     title: "Self-Entrepreneur",
     href: "/appointment" as Route,
     icon: Briefcase,
@@ -71,6 +92,7 @@ export const businessServices: Service[] = [
     ]
   },
   {
+    key: "realEstateRegistry",
     title: "Real Estate Registry",
     href: "/appointment" as Route,
     icon: Building2,
@@ -84,6 +106,7 @@ export const businessServices: Service[] = [
     ]
   },
   {
+    key: "apostilleServices",
     title: "Apostille Services",
     href: "/appointment" as Route,
     icon: Shield,
@@ -97,6 +120,7 @@ export const businessServices: Service[] = [
     ]
   },
   {
+    key: "socialSecurity",
     title: "Social Security",
     href: "/appointment" as Route,
     icon: Shield,
@@ -110,6 +134,7 @@ export const businessServices: Service[] = [
     ]
   },
   {
+    key: "anapecServices",
     title: "ANAPEC Services",
     href: "/appointment" as Route,
     icon: Briefcase,
@@ -123,6 +148,7 @@ export const businessServices: Service[] = [
     ]
   },
   {
+    key: "commercialLicensing",
     title: "Commercial Licensing",
     href: "/appointment" as Route,
     icon: Briefcase,
@@ -140,6 +166,7 @@ export const businessServices: Service[] = [
 // Immigration Services
 export const immigrationServices: Service[] = [
   { 
+    key: "visaApplications",
     title: "Visa Applications",
     href: "/appointment" as Route,
     icon: FileCheck,
@@ -153,19 +180,7 @@ export const immigrationServices: Service[] = [
     ]
   },
   {
-    title: "Work Permits",
-    href: "/appointment" as Route,
-    icon: Briefcase,
-    description: "Complete work permit services",
-    details: [
-      "Application processing",
-      "Document preparation",
-      "Employer coordination",
-      "Status tracking",
-      "Renewal assistance"
-    ]
-  },
-  {
+    key: "residencePermits",
     title: "Residence Permits",
     href: "/appointment" as Route,
     icon: Home,
@@ -179,19 +194,7 @@ export const immigrationServices: Service[] = [
     ]
   },
   {
-    title: "Citizenship Services",
-    href: "/appointment" as Route,
-    icon: Shield,
-    description: "Citizenship application support",
-    details: [
-      "Eligibility assessment",
-      "Document preparation",
-      "Application processing",
-      "Interview preparation",
-      "Status tracking"
-    ]
-  },
-  {
+    key: "familyReunification",
     title: "Family Reunification",
     href: "/appointment" as Route,
     icon: Home,
@@ -205,6 +208,7 @@ export const immigrationServices: Service[] = [
     ]
   },
   {
+    key: "studentVisas",
     title: "Student Visas",
     href: "/appointment" as Route,
     icon: FileCheck,
@@ -218,32 +222,7 @@ export const immigrationServices: Service[] = [
     ]
   },
   {
-    title: "Business & Investor Visas",
-    href: "/appointment" as Route,
-    icon: Briefcase,
-    description: "Investment visa services",
-    details: [
-      "Business plan preparation",
-      "Investment guidance",
-      "Document handling",
-      "Application processing",
-      "Status tracking"
-    ]
-  },
-  {
-    title: "Asylum & Refugee Services",
-    href: "/appointment" as Route,
-    icon: Shield,
-    description: "Asylum application support",
-    details: [
-      "Case evaluation",
-      "Legal representation",
-      "Document preparation",
-      "Status tracking",
-      "Support services"
-    ]
-  },
-  {
+    key: "legalConsultation",
     title: "Legal Consultation",
     href: "/appointment" as Route,
     icon: Shield,

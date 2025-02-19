@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect } from "react"
-import { ErrorPage } from "@/components/error-page"
+import { ErrorPage } from "@/components/core/error-page"
 
 export default function GlobalError({
   error,
@@ -20,8 +20,8 @@ export default function GlobalError({
       <body>
         <ErrorPage
           errorCode="500"
-          message="Critical Error"
-          description="A critical error has occurred. Our team has been notified and is working to resolve the issue. Please try again later."
+          message="Something went wrong"
+          description="A critical error occurred. Please try again later."
           onRetry={reset}
         />
       </body>

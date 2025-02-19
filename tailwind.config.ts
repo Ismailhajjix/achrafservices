@@ -99,12 +99,27 @@ const config: Config = {
           '0%, 100%': { transform: 'translateY(0px)' },
           '50%': { transform: 'translateY(-10px)' },
         },
+        glow: {
+          '0%, 100%': { opacity: '0.5', boxShadow: '0 0 20px rgba(255,184,0,0.3)' },
+          '50%': { opacity: '1', boxShadow: '0 0 30px rgba(255,184,0,0.6)' },
+        },
+        slideDown: {
+          '0%': { transform: 'translate(-50%, -100%)' },
+          '100%': { transform: 'translate(-50%, 200%)' },
+        },
+        slideUp: {
+          '0%': { transform: 'translate(-50%, 200%)' },
+          '100%': { transform: 'translate(-50%, -100%)' },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
         'shimmer': 'shimmer 2s infinite',
         'float': 'float 6s ease-in-out infinite',
+        'glow': 'glow 2s ease-in-out infinite',
+        'slideDown': 'slideDown 3s linear infinite',
+        'slideUp': 'slideUp 3s linear infinite',
       },
     },
   },

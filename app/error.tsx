@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect } from "react"
-import { ErrorPage } from "@/components/error-page"
+import { ErrorPage } from "@/components/core/error-page"
 
 export default function Error({
   error,
@@ -18,8 +18,8 @@ export default function Error({
   return (
     <ErrorPage
       errorCode="500"
-      message="Internal Server Error"
-      description="Oops! Something went wrong on our end. Please try again later or contact our support team if the problem persists."
+      message="Something went wrong"
+      description="An error occurred while processing your request. Please try again later."
       onRetry={reset}
     />
   )
