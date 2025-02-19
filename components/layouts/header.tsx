@@ -3,7 +3,7 @@
 import Image from "next/image"
 import Link from "next/link"
 import { motion } from "framer-motion"
-import { Navigation } from "@/components/layout/navigation"
+import { Navigation } from "@/components/layouts/navigation"
 
 export function Header() {
   return (
