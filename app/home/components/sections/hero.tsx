@@ -5,14 +5,11 @@ import Image from "next/image"
 import { motion } from "framer-motion"
 import { useRef } from "react"
 import Link from "next/link"
-import type { Route } from "next"
 import { cn } from "@/lib/utils"
 import {
   typography,
   gradients,
   effects,
-  variants,
-  buttons,
   containers
 } from "@/styles"
 import { useLanguage } from "@/contexts/language-context"
@@ -20,7 +17,7 @@ import { heroTranslations } from "@/translations/hero"
 
 export function Hero() {
   const sectionRef = useRef<HTMLElement>(null)
-  const { language, dir } = useLanguage()
+  const { language } = useLanguage()
   const t = heroTranslations[language]
 
   const handleContactClick = () => {
@@ -206,7 +203,7 @@ export function Hero() {
                   "flex items-center gap-3"
                 )}
               >
-                <div className={cn(buttons.iconBox.base, buttons.iconBox.medium, gradients.gold.primary)}>
+                <div className={cn("flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-gold to-amber-500 shadow-[0_0_15px_rgba(255,184,0,0.3)] group-hover:scale-110 transition-transform duration-300")}>
                   <Clock className="w-5 h-5 text-black" />
                 </div>
                 <div className={cn(
@@ -238,7 +235,7 @@ export function Hero() {
                   "flex items-center gap-3"
                 )}
               >
-                <div className={cn(buttons.iconBox.base, buttons.iconBox.medium, gradients.gold.primary)}>
+                <div className={cn("flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-gold to-amber-500 shadow-[0_0_15px_rgba(255,184,0,0.3)] group-hover:scale-110 transition-transform duration-300")}>
                   <Clock className="w-5 h-5 text-black" />
                 </div>
                 <div className={cn(
