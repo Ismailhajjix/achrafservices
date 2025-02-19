@@ -20,6 +20,7 @@ export const footerTranslations = {
     },
     copyright: {
       text: "© 2025 Agence Achraf Services. All rights reserved. For nadevo.ma",
+      builtBy: "Nadevo Group"
     }
   },
   fr: {
